@@ -9,7 +9,11 @@ import {
   RefreshCcw,
   ExternalLink,
 } from 'lucide-react';
-import { formatEther } from 'viem';
+import { formatEther, parseEther } from 'viem';
+import { useReadContract, useWriteContract } from 'wagmi';
+import { abi, contractAddress } from '../constants/contractInfo';
+import GameSearchCard from './GameSearchCard';
+import toast from 'react-hot-toast';
 
 // This would typically come from your contract interactions
 const mockActiveGames = [
@@ -24,19 +28,17 @@ const mockActiveGames = [
 ];
 
 export default function JoinGame() {
+      const {
+        data: hash,
+        error,
+        isPending,
+        writeContract,
+      } = useWriteContract();
   const [activeGames, setActiveGames] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState<number|null>();
+  const proofedSearchQuery = searchQuery | 0
 
-  // Function to format time ago
-  const getTimeAgo = (timestamp) => {
-    const seconds = Math.floor((new Date().getTime() - timestamp) / 1000);
-    if (seconds < 60) return `${seconds}s ago`;
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    return `${hours}h ago`;
-  };
 
   // Function to get game type label
   const getGameTypeLabel = (type) => {
@@ -44,27 +46,70 @@ export default function JoinGame() {
     return types[type] || 'Unknown';
   };
 
-  const handleJoinGame = async (gameId, stake) => {
-    setIsLoading(true);
-    try {
-      // Contract interaction logic will go here
-      console.log('Joining game:', gameId, stake);
-    } catch (error) {
-      console.error('Error joining game:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const handleJoinGame = async (gameId, stake) => {
+  //   setIsLoading(true);
+  //   try {
+  //     // Contract interaction logic will go here
+  //     console.log('Joining game:', gameId, stake);
+  //   } catch (error) {
+  //     console.error('Error joining game:', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
-  const handleRefresh = async () => {
+      const gamesIdResult = useReadContract({
+        abi,
+        address: contractAddress,
+        functionName: 'getGameById',
+        args: [BigInt(proofedSearchQuery)],
+        // account: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
+      });
+
+
+
+  const handleSearch = async () => {
     setIsLoading(true);
     try {
       // Fetch active games logic will go here
+
+      console.log(gamesIdResult);
+      
       setActiveGames(mockActiveGames);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const handleJoinGame = async(id,stake)=>{
+    console.log({id, stake});
+    
+    const toastId = toast.loading('Preparing to join game...',)
+try {
+  await writeContract({
+    address: contractAddress,
+    abi,
+    functionName: 'joinGame',
+    args: [id],
+    value: (stake),
+  });
+        toast.loading('Waiting for transaction confirmation...', {
+          id: toastId,
+          icon: '⏳',
+          duration: 3000,
+        });
+} catch (err) {
+        toast.error(
+          err instanceof Error ? err.message : 'Failed to create game',
+          {
+            id: toastId,
+            duration: 3000,
+            icon: '❌',
+          }
+        );
+        console.error('Error joining game:', err);
+}
+  }
 
   return (
     <div className='space-y-6 text-white'>
@@ -73,17 +118,18 @@ export default function JoinGame() {
         <div className='flex-1 relative'>
           <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />
           <input
-            type='text'
-            placeholder='Search by game ID or creator address'
+            type='number'
+            placeholder='Search game by ID'
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className='w-full pl-10 pr-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-white'
           />
         </div>
         <button
-          onClick={handleRefresh}
+          onClick={handleSearch}
           className='p-3 bg-gray-800 border-2 border-gray-700 rounded-lg hover:border-gray-600 transition-colors'
         >
+          {/* // this should be search */}
           <RefreshCcw
             className={`w-5 h-5 text-gray-400 ${
               isLoading ? 'animate-spin' : ''
@@ -107,7 +153,7 @@ export default function JoinGame() {
               <Users className='w-12 h-12 text-gray-600 mx-auto mb-3' />
               <p className='text-gray-400'>No active games found</p>
               <button
-                onClick={handleRefresh}
+                onClick={handleSearch}
                 className='mt-4 text-blue-400 hover:text-blue-300 text-sm flex items-center justify-center gap-2'
               >
                 <RefreshCcw className='w-4 h-4' />
@@ -115,58 +161,7 @@ export default function JoinGame() {
               </button>
             </div>
           ) : (
-            activeGames.map((game) => (
-              <div
-                key={game.gameId}
-                className='bg-gray-800 rounded-lg p-4 border-2 border-gray-700 hover:border-gray-600 transition-colors'
-              >
-                <div className='flex justify-between items-start mb-4'>
-                  <div>
-                    <div className='flex items-center gap-2 mb-1'>
-                      <h3 className='font-medium'>
-                        Game #{game.gameId.slice(0, 6)}
-                      </h3>
-                      <button
-                        onClick={() =>
-                          navigator.clipboard.writeText(game.gameId)
-                        }
-                        className='text-gray-400 hover:text-gray-300'
-                      >
-                        <ExternalLink className='w-4 h-4' />
-                      </button>
-                    </div>
-                    <p className='text-sm text-gray-400'>
-                      Created by {game.creator.slice(0, 6)}...
-                      {game.creator.slice(-4)}
-                    </p>
-                  </div>
-                  <span className='text-sm text-gray-400'>
-                    {getTimeAgo(game.createdAt)}
-                  </span>
-                </div>
-
-                <div className='flex items-center justify-between'>
-                  <div className='flex items-center gap-4'>
-                    <div className='flex items-center gap-2'>
-                      <Coins className='w-4 h-4 text-yellow-400' />
-                      <span>{game.stake} ETH</span>
-                    </div>
-                    <div className='flex items-center gap-2'>
-                      <Timer className='w-4 h-4 text-blue-400' />
-                      <span>{getGameTypeLabel(game.gameType)}</span>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleJoinGame(game.gameId, game.stake)}
-                    disabled={isLoading}
-                    className='px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center gap-2'
-                  >
-                    <Users className='w-4 h-4' />
-                    Join Game
-                  </button>
-                </div>
-              </div>
-            ))
+            <GameSearchCard game={gamesIdResult.data} isLoading={isPending} onJoinGame={()=>handleJoinGame(gamesIdResult.data.gameId, gamesIdResult.data.stake)} />
           )}
         </div>
       </div>
