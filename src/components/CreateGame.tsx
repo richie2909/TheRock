@@ -6,6 +6,7 @@ import { parseEther, decodeAbiParameters } from 'viem';
 import { useWriteContract, useWaitForTransactionReceipt, useWatchContractEvent } from 'wagmi';
 import { abi, contractAddress } from '../constants/contractInfo';
 import toast from 'react-hot-toast';
+import { extractErrorMessages } from '../utils';
 
 
 const GAME_TYPES = [
@@ -76,6 +77,8 @@ export default function CreateGame() {
         value: parseEther(stakeAmount),
       });
 
+  
+
       // Update loading toast when transaction is sent
       toast.loading('Waiting for transaction confirmation...', {
         id: toastId,
@@ -106,6 +109,20 @@ export default function CreateGame() {
         setStakeAmount('');
       }
     }, [isConfirmed]);
+
+    React.useEffect(() => {
+      if (error) {
+        toast.error(extractErrorMessages(error?.message), {
+          duration: 3000,
+          icon: '🎉',
+        });
+        console.log(error);
+        
+        // Reset form
+        // setSelectedType(0);
+        // setStakeAmount('');
+      }
+    }, [error]);
 
     const isLoading = isPending || isConfirming;
 

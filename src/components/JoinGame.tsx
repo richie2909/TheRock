@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   Users,
@@ -10,10 +10,11 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { formatEther, parseEther } from 'viem';
-import { useReadContract, useWriteContract } from 'wagmi';
+import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { abi, contractAddress } from '../constants/contractInfo';
 import GameSearchCard from './GameSearchCard';
 import toast from 'react-hot-toast';
+import { extractErrorMessages } from '../utils';
 
 // This would typically come from your contract interactions
 const mockActiveGames = [
@@ -34,6 +35,10 @@ export default function JoinGame() {
         isPending,
         writeContract,
       } = useWriteContract();
+            const { isLoading: isConfirming, isSuccess: isConfirmed } =
+              useWaitForTransactionReceipt({
+                hash,
+              });
   const [activeGames, setActiveGames] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState<number|null>();
@@ -110,6 +115,29 @@ try {
         console.error('Error joining game:', err);
 }
   }
+
+
+useEffect(() => {
+      if (isConfirmed) {
+        toast.success('Game joined successfully! 🎮', {
+          duration: 3000,
+          icon: '🎉',
+        });
+        // Reset form
+      }
+    }, [isConfirmed]);
+
+        React.useEffect(() => {
+          if (error) {
+            toast.error(extractErrorMessages(error?.message), {
+              duration: 3000,
+              icon: '🎉',
+            });
+  console.log(error);
+
+  
+          }
+        }, [error]);
 
   return (
     <div className='space-y-6 text-white'>
