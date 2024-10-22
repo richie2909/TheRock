@@ -1,12 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Plus, Users } from 'lucide-react';
 import CreateGame from '../components/CreateGame';
 import JoinGame from '../components/JoinGame';
+import { useAccount } from 'wagmi';
+import { useRouter } from 'next/router';
 
 export default function GamePage() {
   const [activeTab, setActiveTab] = useState('create');
+  const {address} = useAccount();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!address) {
+      router.push('/'); 
+    }
+    // todo add notification message when redirecting user
+  }, [address, router]);
 
   return (
     <div className='space-y-6'>

@@ -1,4 +1,4 @@
-export const contractAddress = '0xcc30cE9583F7542912EdFe0881E5730808ad5D40';
+export const contractAddress = '0x0d4e9699B31Ec320D99bD427661C147f4b7eeb8A';
 
 export const abi = [
   { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
@@ -124,6 +124,31 @@ export const abi = [
       },
       {
         indexed: false,
+        internalType: 'address',
+        name: 'player',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'enum RockPaperScissors.Choice',
+        name: 'choice',
+        type: 'uint8',
+      },
+    ],
+    name: 'PlayerMoved',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'uint256',
+        name: 'gameId',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
         internalType: 'uint8',
         name: 'roundNumber',
         type: 'uint8',
@@ -177,6 +202,7 @@ export const abi = [
       },
       { internalType: 'uint8', name: 'roundsPlayed', type: 'uint8' },
       { internalType: 'bool', name: 'isActive', type: 'bool' },
+      { internalType: 'address', name: 'lastPlayerMove', type: 'address' },
     ],
     stateMutability: 'view',
     type: 'function',
@@ -203,6 +229,17 @@ export const abi = [
             type: 'uint8[2]',
           },
           { internalType: 'bool', name: 'isActive', type: 'bool' },
+          { internalType: 'address', name: 'lastPlayerMove', type: 'address' },
+          {
+            internalType: 'enum RockPaperScissors.Choice[]',
+            name: 'player1Moves',
+            type: 'uint8[]',
+          },
+          {
+            internalType: 'enum RockPaperScissors.Choice[]',
+            name: 'player2Moves',
+            type: 'uint8[]',
+          },
         ],
         internalType: 'struct RockPaperScissors.Game',
         name: '',
@@ -226,10 +263,37 @@ export const abi = [
           { internalType: 'uint8[2]', name: 'scores', type: 'uint8[2]' },
           { internalType: 'uint8[2]', name: 'choices', type: 'uint8[2]' },
           { internalType: 'bool', name: 'isActive', type: 'bool' },
+          { internalType: 'address', name: 'lastPlayerMove', type: 'address' },
+          {
+            internalType: 'enum RockPaperScissors.Choice[]',
+            name: 'player1Moves',
+            type: 'uint8[]',
+          },
+          {
+            internalType: 'enum RockPaperScissors.Choice[]',
+            name: 'player2Moves',
+            type: 'uint8[]',
+          },
         ],
         internalType: 'struct RockPaperScissors.GameView[]',
         name: '',
         type: 'tuple[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'uint256', name: '_gameId', type: 'uint256' },
+      { internalType: 'address', name: 'player', type: 'address' },
+    ],
+    name: 'getPlayerMoves',
+    outputs: [
+      {
+        internalType: 'enum RockPaperScissors.Choice[]',
+        name: '',
+        type: 'uint8[]',
       },
     ],
     stateMutability: 'view',

@@ -1,148 +1,5 @@
 'use client';
 
-// import React, { useState, useEffect } from 'react';
-// import {
-//   Hand,
-//   Scissors,
-//   Layers,
-//   CheckCircle,
-//   Timer,
-//   AlertCircle,
-// } from 'lucide-react';
-// import toast from 'react-hot-toast';
-// import { useRouter } from 'next/router' // Import useRouter
-
-// const GameInterface = ({
-//   onMakeMove,
-//   gameDetails,
-//   isConnected = false,
-//   userAddress = '',
-//   onConnect,
-// }) => {
-//   const [selectedMove, setSelectedMove] = useState(null);
-//   const [gameStatus, setGameStatus] = useState('');
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const router = useRouter();
-//     const { gameId } = router.query;
-
-//   useEffect(() => {
-//     if (gameDetails) {
-//       setGameStatus(gameDetails.isActive ? 'Active' : 'Inactive');
-//       // Reset move if game becomes inactive
-//       if (!gameDetails.isActive) {
-//         setSelectedMove(null);
-//       }
-//     }
-//   }, [gameDetails]);
-
-//   const handleMoveSelection = async (choice) => {
-//     try {
-//       setIsSubmitting(true);
-//       await onMakeMove(gameId, choice);
-//       setSelectedMove(choice);
-//       toast.success(`Move submitted: ${choice}`);
-//     } catch (err) {
-//       toast.error('Failed to submit move. Please try again.');
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   const isPlayerTurn =
-//     gameDetails?.isActive &&
-//     gameDetails.players.includes(userAddress) &&
-//     !selectedMove;
-
-//   const getMoveButton = (moveName, Icon, color) => (
-//     <button
-//       onClick={() => handleMoveSelection(moveName)}
-//       disabled={!isPlayerTurn || isSubmitting}
-//       className={`
-//         flex items-center justify-center p-4 rounded-lg
-//         ${selectedMove === moveName ? `bg-${color}-500` : 'bg-gray-700'}
-//         ${
-//           isPlayerTurn
-//             ? `hover:bg-${color}-500`
-//             : 'opacity-50 cursor-not-allowed'
-//         }
-//         transition duration-200 ease-in-out transform hover:scale-105
-//         disabled:opacity-50 disabled:cursor-not-allowed
-//       `}
-//     >
-//       <Icon size={36} className='mr-2' />
-//       <span className='text-lg font-medium'>{moveName}</span>
-//     </button>
-//   );
-
-//   const getGameStatusColor = () => {
-//     if (!gameDetails?.isActive) return 'text-red-500';
-//     if (selectedMove) return 'text-yellow-500';
-//     return 'text-green-500';
-//   };
-
-//   return (
-//     <div className='flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4'>
-//       <div className='w-full max-w-lg bg-gray-800 rounded-lg shadow-xl p-6'>
-//         {/* Header */}
-//         <div className='text-center mb-6'>
-//           <h1 className='text-2xl font-bold mb-4'>Rock Paper Scissors</h1>
-//           <div className='flex justify-between items-center'>
-//             <span className='text-sm opacity-75'>Game #{gameId}</span>
-//             <span className={`flex items-center ${getGameStatusColor()}`}>
-//               {gameDetails?.isActive ? (
-//                 <Timer className='mr-2' />
-//               ) : (
-//                 <AlertCircle className='mr-2' />
-//               )}
-//               {gameStatus}
-//             </span>
-//           </div>
-//         </div>
-
-//         {/* Game Details */}
-//         <div className='space-y-4 mb-8'>
-//           <div className='flex justify-between items-center p-3 bg-gray-700 rounded-lg'>
-//             <span>Stake</span>
-//             <span className='font-bold'>{gameDetails?.stake} ETH</span>
-//           </div>
-
-//           <div className='flex flex-col gap-4'>
-//             <div className='p-3 bg-gray-700 rounded-lg'>
-//               <div className='text-sm opacity-75'>Player 1</div>
-//               <div className='truncate'>{gameDetails?.players[0] || '...'}</div>
-//             </div>
-//             <div className='p-3 bg-gray-700 rounded-lg'>
-//               <div className='text-sm opacity-75'>Player 2</div>
-//               <div className='truncate'>
-//                 {gameDetails?.players[1] || 'Waiting...'}
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Move Selection */}
-//         <div className='flex flex-col sm:flex-row justify-around gap-4 mb-8'>
-//           {getMoveButton('Rock', Hand, 'blue')}
-//           {getMoveButton('Paper', Layers, 'yellow')}
-//           {getMoveButton('Scissors', Scissors, 'red')}
-//         </div>
-
-//         {/* Move Confirmation */}
-//         {selectedMove && (
-//           <div className='flex items-center justify-center gap-2 mt-4'>
-//             <CheckCircle className='text-green-500' />
-//             <span className='text-lg font-medium'>
-//               Move submitted: {selectedMove}
-//             </span>
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default GameInterface;
-
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { formatEther } from 'viem';
@@ -163,26 +20,35 @@ import {
   Crown,
   GamepadIcon,
   CircleDot,
+  Clock,
+  X,
+  Equal,
+  Play,
 } from 'lucide-react';
-import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import {
+  useAccount,
+  useReadContract,
+  useReadContracts,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from 'wagmi';
 import { abi, contractAddress } from '../../constants/contractInfo';
 import { extractErrorMessages } from '../../utils';
 import toast from 'react-hot-toast';
+import Link from 'next/link';
 
-const GameInterface = ({ onMakeMove }) => {
+const GameInterface = () => {
+  // ... (previous state and hooks remain the same until gameDetails)
+  const [refreshData, setRefreshData] = useState('');
+
   const router = useRouter();
   const account = useAccount();
-        const {
-          data: hash,
-          error,
-          isPending,
-          writeContract,
-        } = useWriteContract();
+  const { data: hash, error, isPending, writeContract } = useWriteContract();
 
-        const { isLoading: isConfirming, isSuccess: isConfirmed } =
-          useWaitForTransactionReceipt({
-            hash,
-          });
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    });
 
   const { gameId } = router.query;
   const proofedGamedId = Number(gameId) || 0;
@@ -192,10 +58,8 @@ const GameInterface = ({ onMakeMove }) => {
     address: contractAddress,
     functionName: 'getGameById',
     args: [BigInt(Number(proofedGamedId))],
-    // account: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
+    scopeKey: refreshData,
   });
-
-  console.log(gamesIdResult.data);
 
   const pending = isPending || isConfirming;
 
@@ -204,57 +68,49 @@ const GameInterface = ({ onMakeMove }) => {
   const [playerMove, setPlayerMove] = useState();
   const gameDetails = gamesIdResult.data;
   const userAddress = account.address;
+  const gameEnded = !gameDetails?.isActive && gameDetails?.roundsPlayed > 0;
+  console.log({ gameEnded });
 
-
-  const handleMakeMove = async()=>{
+  const handleMakeMove = async () => {
     try {
-        await writeContract({
-          address: contractAddress,
-          abi,
-          functionName: 'makeMove',
-          args: [BigInt(proofedGamedId), playerMove],
-        });
+      await writeContract({
+        address: contractAddress,
+        abi,
+        functionName: 'makeMove',
+        args: [BigInt(proofedGamedId), playerMove],
+      });
+      console.log(gamesIdResult);
     } catch (error) {
       console.log(error);
-      
     }
-  }
+  };
 
+  React.useEffect(() => {
+    console.log(gamesIdResult);
+  }, [gamesIdResult]);
 
-  useEffect(()=>{
-    console.log('rerendering player move', playerMove);
-    
-  },[playerMove])
+  React.useEffect(() => {
+    if (isConfirmed) {
+      toast.success('Game created successfully! 🎮', {
+        duration: 3000,
+        icon: '🎉',
+      });
+    }
+    setRefreshData(Date.now().toString());
+  }, [isConfirmed]);
 
-
-      React.useEffect(() => {
-      if (isConfirmed) {
-        toast.success('Game created successfully! 🎮', {
-          duration: 3000,
-          icon: '🎉',
-        });
-      }
-    }, [isConfirmed]);
-
-    React.useEffect(() => {
-      if (error) {
-        toast.error(extractErrorMessages(error?.message), {
-          duration: 3000,
-          icon: '🎉',
-        });
-        console.log(error);
-        
-        // Reset form
-        // setSelectedType(0);
-        // setStakeAmount('');
-      }
-    }, [error]);
-
-  console.log({ gameDetails });
-  console.log({ proofedGamedId });
+  React.useEffect(() => {
+    if (error) {
+      toast.error(extractErrorMessages(error?.message), {
+        duration: 3000,
+        icon: '🎉',
+      });
+      console.log(error);
+    }
+  }, [error]);
 
   // Early return for inactive games
-  if (!gameDetails?.isActive) {
+  if (!gameDetails?.isActive && gameDetails?.roundsPlayed < 1) {
     return (
       <div className='flex flex-col items-center justify-center min-h-[400px] bg-slate-900 text-white p-6'>
         <div className='bg-slate-800/50 p-8 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col items-center max-w-md w-full'>
@@ -278,7 +134,7 @@ const GameInterface = ({ onMakeMove }) => {
   }
 
   // Early return for non-players
-  if (!gameDetails.players.includes(userAddress)) {
+  if (!gameDetails?.players.includes(userAddress)) {
     return (
       <div className='flex flex-col items-center justify-center min-h-[400px] bg-slate-900 text-white p-6'>
         <div className='bg-slate-800/50 p-8 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col items-center max-w-md w-full'>
@@ -290,7 +146,7 @@ const GameInterface = ({ onMakeMove }) => {
             You are not participating in this game
           </p>
           <button
-            onClick={() => router.push('/games')}
+            onClick={() => router.push('/game')}
             className='flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors'
           >
             <ArrowLeftRight className='w-5 h-5' />
@@ -360,11 +216,6 @@ const GameInterface = ({ onMakeMove }) => {
 
   const handleMoveSelection = async (choice) => {
     try {
-      // setIsSubmitting(true);
-      console.log('Choice type:', typeof choice);
-      console.log('Choice:', choice);
-
-      // Mapping choices to player moves
       const moveMapping = {
         Rock: 1,
         Paper: 2,
@@ -372,7 +223,6 @@ const GameInterface = ({ onMakeMove }) => {
       };
 
       setPlayerMove(moveMapping[choice]);
-      
     } catch (error) {
       console.error('Move submission failed:', error);
     } finally {
@@ -383,11 +233,48 @@ const GameInterface = ({ onMakeMove }) => {
   const gameType = getGameTypeInfo(gameDetails.gameType);
   const isPlayerTurn = !selectedMove;
 
-  const getMoveButton = (moveName, Icon, color) => (
-    <button
-      onClick={() => handleMoveSelection(moveName)}
-      disabled={!isPlayerTurn || isSubmitting}
-      className={`
+  // const getMoveButton = (moveName, Icon, color) => (
+  //   <button
+  //     onClick={() => handleMoveSelection(moveName)}
+  //     disabled={!isPlayerTurn || isSubmitting}
+  //     className={`
+  //       relative flex flex-col items-center justify-center p-6 rounded-xl
+  //       ${
+  //         selectedMove === moveName
+  //           ? `${color.bg} ${color.text}`
+  //           : 'bg-slate-800 hover:bg-slate-700'
+  //       }
+  //       ${isPlayerTurn ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}
+  //       transition-all duration-200 ease-out
+  //       disabled:opacity-50 disabled:cursor-not-allowed
+  //       group
+  //     `}
+  //   >
+  //     <div
+  //       className={`
+  //       p-3 rounded-lg mb-2
+  //       ${
+  //         selectedMove === moveName
+  //           ? color.iconBg
+  //           : 'bg-slate-700 group-hover:bg-slate-600'
+  //       }
+  //       transition-colors
+  //     `}
+  //     >
+  //       <Icon
+  //         size={32}
+  //         className={selectedMove === moveName ? color.text : 'text-white'}
+  //       />
+  //     </div>
+  //     <span className='text-lg font-medium'>{moveName}</span>
+  //   </button>
+  // );
+
+    const getMoveButton = (moveName, color, emoji) => (
+      <button
+        onClick={() => handleMoveSelection(moveName)}
+        disabled={!isPlayerTurn || isSubmitting}
+        className={`
         relative flex flex-col items-center justify-center p-6 rounded-xl
         ${
           selectedMove === moveName
@@ -399,9 +286,9 @@ const GameInterface = ({ onMakeMove }) => {
         disabled:opacity-50 disabled:cursor-not-allowed
         group
       `}
-    >
-      <div
-        className={`
+      >
+        <div
+          className={`
         p-3 rounded-lg mb-2
         ${
           selectedMove === moveName
@@ -410,15 +297,18 @@ const GameInterface = ({ onMakeMove }) => {
         }
         transition-colors
       `}
-      >
-        <Icon
-          size={32}
-          className={selectedMove === moveName ? color.text : 'text-white'}
-        />
-      </div>
-      <span className='text-lg font-medium'>{moveName}</span>
-    </button>
-  );
+        >
+          {/* Use emoji instead of Icon */}
+          <span
+            className={selectedMove === moveName ? color.text : 'text-white'}
+            style={{ fontSize: '32px' }}
+          >
+            {emoji}
+          </span>
+        </div>
+        <span className='text-lg font-medium'>{moveName}</span>
+      </button>
+    );
 
   const moveColors = {
     Rock: {
@@ -438,9 +328,150 @@ const GameInterface = ({ onMakeMove }) => {
     },
   };
 
+  const getMoveIcon = (move) => {
+    switch (move) {
+      case 1:
+                return '🗿';
+      case 2:
+        return '📄';
+      case 3:
+        return '✂️';
+      default:
+        return null;
+    }
+  };
+  // const getMoveIcon = (move) => {
+  //   switch (move) {
+  //     case 1:
+  //       return <Hand className='w-5 h-5' />;
+  //     case 2:
+  //       return <File className='w-5 h-5' />;
+  //     case 3:
+  //       return <Scissors className='w-5 h-5' />;
+  //     default:
+  //       return null;
+  //   }
+  // };
+
+  const getResultIcon = (player1Move, player2Move) => {
+    if (!player1Move || !player2Move) return null;
+
+    if (player1Move === player2Move) {
+      return <Equal className='w-4 h-4 text-yellow-500' />;
+    }
+
+    const isWin =
+      (player1Move === 1 && player2Move === 3) ||
+      (player1Move === 2 && player2Move === 1) ||
+      (player1Move === 3 && player2Move === 2);
+
+    return isWin ? (
+      <CheckCircle2 className='w-4 h-4 text-green-500' />
+    ) : (
+      <X className='w-4 h-4 text-red-500' />
+    );
+  };
+
+  const MoveHistory = () => {
+    const playerIndex = gameDetails.players.indexOf(userAddress);
+    const isPlayer1 = playerIndex === 0;
+    const myMoves = isPlayer1
+      ? gameDetails.player1Moves
+      : gameDetails.player2Moves;
+    const opponentMoves = isPlayer1
+      ? gameDetails.player2Moves
+      : gameDetails.player1Moves;
+    const completedRounds = Math.min(myMoves.length, opponentMoves.length);
+
+    const getResultIcon = (myMove, opponentMove) => {
+      if (myMove === opponentMove) {
+        return <Equal className='w-4 h-4 text-yellow-500' />;
+      }
+      if (
+        (myMove === 1 && opponentMove === 3) ||
+        (myMove === 2 && opponentMove === 1) ||
+        (myMove === 3 && opponentMove === 2)
+      ) {
+        return <CheckCircle2 className='w-4 h-4 text-green-500' />;
+      }
+      return <X className='w-4 h-4 text-red-500' />;
+    };
+
+    if (completedRounds === 0) {
+      return (
+        <div className='mb-4'>
+          <h3 className='text-sm font-semibold mb-2'>Move History</h3>
+          <div className='p-3 bg-slate-800 rounded-lg text-center text-slate-400 text-sm'>
+            No completed rounds yet
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className='mb-4'>
+        <div className='flex items-center justify-between mb-2'>
+          <h3 className='text-sm font-semibold'>Move History</h3>
+          <span className='text-xs text-slate-400'>
+            {completedRounds} round{completedRounds > 1 ? 's' : ''}
+          </span>
+        </div>
+        <div className='space-y-2'>
+          {Array.from({ length: completedRounds }).map((_, index) => {
+            const myMove = myMoves[index];
+            const opponentMove = opponentMoves[index];
+
+            return (
+              <div
+                key={index}
+                className='flex items-center justify-between p-2 bg-slate-800 rounded-lg'
+              >
+                <div className='flex items-center gap-1'>
+                  <span className='text-xs text-slate-400 w-4'>
+                    {index + 1}
+                  </span>
+                  <span className='text-xs mr-1'>Me</span>
+                  <div className='p-1.5 bg-slate-700 rounded'>
+                    {getMoveIcon(myMove)}
+                  </div>
+                </div>
+                <div className='flex items-center gap-1'>
+                  {getResultIcon(myMove, opponentMove)}
+                </div>
+                <div className='flex items-center gap-1'>
+                  <div className='p-1.5 bg-slate-700 rounded'>
+                    {getMoveIcon(opponentMove)}
+                  </div>
+                  <span className='text-xs'>
+                    {formatAddress(gameDetails.players[1 - playerIndex])}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const WaitingForMove = () => (
+    <div className='flex flex-col items-center justify-center p-6 bg-slate-800 rounded-xl'>
+      <div className='animate-pulse mb-4'>
+        <Clock className='w-12 h-12 text-blue-500' />
+      </div>
+      <h3 className='text-lg font-semibold mb-2'>Waiting for Move</h3>
+      <p className='text-slate-400 text-center'>
+        {`Waiting for ${formatAddress(
+          gameDetails.players.find((p) => p !== userAddress)
+        )} to make their move`}
+      </p>
+    </div>
+  );
+
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white p-4'>
       <div className='w-full max-w-xl bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl p-6'>
+        {/* Header and Game Info sections remain the same */}
         {/* Header */}
         <div className='text-center mb-8'>
           <div className='flex items-center justify-center gap-3 mb-4'>
@@ -472,6 +503,34 @@ const GameInterface = ({ onMakeMove }) => {
 
         {/* Game Info */}
         <div className='space-y-4 mb-8'>
+          {gameEnded && (
+            <div className='text-center mb-4'>
+              {(() => {
+                const userScore =
+                  gameDetails.scores[gameDetails.players.indexOf(userAddress)];
+                const opponentScore =
+                  gameDetails.scores[
+                    1 - gameDetails.players.indexOf(userAddress)
+                  ];
+
+                if (userScore > opponentScore) {
+                  return (
+                    <p className='text-green-500 font-bold'>🎉 You win! 🎉</p>
+                  );
+                } else if (userScore < opponentScore) {
+                  return (
+                    <p className='text-red-500 font-bold'>😢 You lose! 😢</p>
+                  );
+                } else {
+                  return (
+                    <p className='text-yellow-500 font-bold'>
+                      🤝 It's a tie! 🤝
+                    </p>
+                  );
+                }
+              })()}
+            </div>
+          )}
           <div className='flex items-center justify-between p-4 bg-slate-800 rounded-xl'>
             <div className='flex items-center gap-2'>
               <Coins className='w-5 h-5 text-yellow-500' />
@@ -523,44 +582,70 @@ const GameInterface = ({ onMakeMove }) => {
           ))}
         </div>
 
-        {/* Moves */}
-        <div className='grid grid-cols-3 gap-4 mb-6'>
-          {getMoveButton('Rock', Hand, moveColors.Rock)}
-          {getMoveButton('Paper', File, moveColors.Paper)}
-          {getMoveButton('Scissors', Scissors, moveColors.Scissors)}
-        </div>
+        <MoveHistory />
 
-        {/* Move Confirmation */}
-        {/* {true && (
-          <div className='flex items-center justify-center gap-3 p-4 bg-green-500/10 border border-green-500/20 rounded-xl'>
-            <CheckCircle2 className='w-6 h-6 text-green-500' />
-            <span className='text-lg font-medium text-green-500'>
-              Move submitted: {selectedMove}
-            </span>
+        {gameDetails.lastPlayerMove === userAddress && (
+          <div className='flex items-center justify-center mb-4'>
+            <span className='text-sm text-slate-400 mr-2'>My last move:</span>
+            {gameDetails.choices[1] === 1 && <Hand className='w-5 h-5' />}{' '}
+            {/* Rock */}
+            {gameDetails.choices[1] === 2 && <File className='w-5 h-5' />}{' '}
+            {/* Paper */}
+            {gameDetails.choices[1] === 3 && (
+              <Scissors className='w-5 h-5' />
+            )}{' '}
+            {/* Scissors */}
           </div>
-        )} */}
+        )}
+        {gameDetails.lastPlayerMove !== userAddress && !gameEnded ? (
+          <>
+            <div className='grid grid-cols-3 gap-4 mb-6'>
+              {/* {getMoveButton('Rock', Hand, moveColors.Rock)}
+              {getMoveButton('Paper', File, moveColors.Paper)}
+              {getMoveButton('Scissors', Scissors, moveColors.Scissors)} */}
+              {getMoveButton('Rock',  moveColors.Rock, '🗿')}
+              {getMoveButton('Paper', moveColors.Paper, '📄')}
+              {getMoveButton('Scissors', moveColors.Scissors, '✂️')}
+            </div>
 
-        {playerMove && (
-          <button
-            onClick={handleMakeMove}
-            disabled={pending}
-            className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2
-          ${
-            !playerMove
-              ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
-              : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90'
-          }
-        `}
-          >
-            {pending ? (
-              <div className='w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin' />
-            ) : (
-              <>
-                <CheckCircle2 className='w-5 h-5' />
-                <span>Make move</span>
-              </>
+            {playerMove && (
+              <button
+                onClick={handleMakeMove}
+                disabled={pending}
+                className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2
+                  ${
+                    !playerMove
+                      ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90'
+                  }`}
+              >
+                {pending ? (
+                  <div className='w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin' />
+                ) : (
+                  <>
+                    <CheckCircle2 className='w-5 h-5' />
+                    <span>Make move</span>
+                  </>
+                )}
+              </button>
             )}
-          </button>
+          </>
+        ) : gameDetails.lastPlayerMove === userAddress ? (
+          <WaitingForMove />
+        ) : (
+          <></>
+        )}
+        {gameEnded && (
+          <Link
+            href='/game'
+            className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90'
+              `}
+          >
+            <>
+              <Play className='w-5 h-5' />
+              <span>Start New Game</span>
+            </>
+          </Link>
         )}
       </div>
     </div>

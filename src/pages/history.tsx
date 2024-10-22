@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Users,
   Swords,
@@ -10,23 +10,29 @@ import {
   UserCheck,
   UserX,
   GamepadIcon,
+  Play,
+  X,
+  CheckCircle2,
+  Equal,
+  ExternalLink,
 } from 'lucide-react';
 import { formatEther } from 'viem';
 import { useAccount, useReadContract } from 'wagmi';
 import { abi, contractAddress } from '../constants/contractInfo';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 
 
-const GameHistory = ({ userAddress }) => {
-  
+const GameHistory = () => {
   const account = useAccount()
+  const router = useRouter();
 
     const gamesIdResult = useReadContract({
       abi,
       address: contractAddress,
       functionName: 'getUserGames',
       args: [account.address],
-      // account: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
     });
 
     const gamesResult = useReadContract({
@@ -34,8 +40,9 @@ const GameHistory = ({ userAddress }) => {
       address: contractAddress,
       functionName: 'getGamesInfo',
       args: [gamesIdResult.data],
-      // account: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
     });
+
+
 
 
   if (!gamesResult.data || gamesResult?.data.length === 0) {
@@ -45,12 +52,26 @@ const GameHistory = ({ userAddress }) => {
           <GamepadIcon className='h-8 w-8 text-gray-400' />
         </div>
         <h3 className='mb-2 text-lg font-medium text-white'>No Games Found</h3>
-        <p className='text-sm text-gray-400'>
-          Start a new game to begin your gaming journey!
-        </p>
+        <Link
+          href='/game' 
+          className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90'
+              `}
+        >
+          <>
+            <Play className='w-5 h-5' />
+            <span>Start New Game</span>
+          </>
+        </Link>
       </div>
     );
   }
+
+      useEffect(() => {
+        if (!account.address) {
+          router.push('/');
+        }
+        // todo add notification message when redirecting user
+      }, [account.address, router]);
 
   return (
     <div className='space-y-4'>
@@ -66,8 +87,11 @@ const GameHistory = ({ userAddress }) => {
   );
 };
 
+// 
+
 const GameHistoryCard = ({ game, userAddress }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const router = useRouter();
 
   const formatAddress = (address) => {
     if (address === userAddress) return 'Me';
@@ -104,20 +128,66 @@ const GameHistoryCard = ({ game, userAddress }) => {
     }
   };
 
+  const getGameStatus = () => {
+    if (game.isActive)
+      return { label: 'Active', color: 'bg-green-900/50 text-green-400' };
+
+    const playerIndex = game.players.indexOf(userAddress);
+    const myScore = game.scores[playerIndex];
+    const opponentScore = game.scores[1 - playerIndex];
+
+    if (myScore === opponentScore)
+      return { label: 'Tie', color: 'bg-yellow-900/50 text-yellow-400' };
+    if (myScore > opponentScore)
+      return { label: 'Won', color: 'bg-green-900/50 text-green-400' };
+    return { label: 'Lost', color: 'bg-red-900/50 text-red-400' };
+  };
+
+  const getMoveIcon = (move) => {
+    switch (Number(move)) {
+      case 1:
+        return '🗿';
+      case 2:
+        return '📄';
+      case 3:
+        return '✂️';
+      default:
+        return '❓';
+    }
+  };
+
+  const getResultIcon = (myMove, opponentMove) => {
+    if (myMove === opponentMove) {
+      return <Equal className='w-4 h-4 text-yellow-500' />;
+    }
+    if (
+      (myMove === 1 && opponentMove === 3) ||
+      (myMove === 2 && opponentMove === 1) ||
+      (myMove === 3 && opponentMove === 2)
+    ) {
+      return <CheckCircle2 className='w-4 h-4 text-green-500' />;
+    }
+    return <X className='w-4 h-4 text-red-500' />;
+  };
+
   const gameTypeInfo = getGameTypeInfo(game.gameType);
-  const player2Joined =
-    game.players[1] !== '0x0000000000000000000000000000000000000000';
+  const gameStatus = getGameStatus();
   const formattedStake = formatEther(game.stake);
+  const playerIndex = game.players.indexOf(userAddress);
+  const isPlayer1 = playerIndex === 0;
+  const myMoves = isPlayer1 ? game.player1Moves : game.player2Moves;
+  const opponentMoves = isPlayer1 ? game.player2Moves : game.player1Moves;
+  const completedRounds = Math.min(myMoves.length, opponentMoves.length);
 
   return (
-    <div className='w-full overflow-hidden rounded-lg border border-gray-700 bg-gradient-to-br from-gray-900 to-gray-800 shadow-lg hover:border-gray-600 transition-all duration-200'>
+    <div className='w-full overflow-hidden rounded-lg border border-slate-700 bg-slate-800/50 shadow-lg hover:border-slate-600 transition-all duration-200'>
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         className='w-full text-left'
       >
         <div className='flex items-center justify-between p-4'>
           <div className='flex items-center space-x-4'>
-            <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-gray-800'>
+            <div className='flex h-10 w-10 items-center justify-center rounded-lg bg-slate-800'>
               {gameTypeInfo.icon}
             </div>
             <div>
@@ -126,105 +196,133 @@ const GameHistoryCard = ({ game, userAddress }) => {
                   Game #{game.gameId.toString()}
                 </h3>
                 <span
-                  className={`rounded-full px-2 py-0.5 text-xs ${
-                    game.isActive
-                      ? 'bg-green-900/50 text-green-400'
-                      : 'bg-gray-700 text-gray-400'
-                  }`}
+                  className={`rounded-full px-2 py-0.5 text-xs ${gameStatus.color}`}
                 >
-                  {game.isActive ? 'Active' : 'Completed'}
+                  {gameStatus.label}
                 </span>
               </div>
-              <p className='text-sm text-gray-400'>
+              <p className='text-sm text-slate-400'>
                 {gameTypeInfo.name} • {formattedStake} ETH Stake
               </p>
             </div>
           </div>
-          <ChevronsUpDown
-            className={`h-5 w-5 text-gray-400 transition-transform duration-200 ${
-              isExpanded ? 'rotate-180 transform' : ''
-            }`}
-          />
+          <div className='flex items-center gap-2'>
+            {game.isActive && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(`/game/${game.gameId}`);
+                }}
+                className='flex items-center gap-1 px-3 py-1 text-sm bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors'
+              >
+                <span>Play</span>
+                <ExternalLink className='w-4 h-4' />
+              </button>
+            )}
+            <ChevronsUpDown
+              className={`h-5 w-5 text-slate-400 transition-transform duration-200 ${
+                isExpanded ? 'rotate-180 transform' : ''
+              }`}
+            />
+          </div>
         </div>
       </button>
 
       {isExpanded && (
-        <div className='px-4 pb-4 space-y-6'>
+        <div className='px-4 pb-4'>
           {/* Players Section */}
-          <div className='space-y-3'>
-            <div className='flex items-center text-gray-400'>
+          <div className='space-y-3 mb-4 text-white' >
+            <div className='flex items-center text-slate-400'>
               <Users className='mr-2 h-4 w-4' />
               <span className='text-sm font-medium'>Players</span>
             </div>
 
-            <div className='rounded-lg bg-gray-800/50 p-4'>
-              {/* Player 1 */}
-              <div className='mb-3 flex items-center justify-between'>
-                <div className='flex items-center space-x-2'>
-                  <UserCheck className='h-4 w-4 text-green-500' />
-                  <span className='text-sm text-gray-300'>
-                    {formatAddress(game.players[0])}
-                  </span>
+            {game.players.map((player, index) => (
+              <div
+                key={player}
+                className={`p-4 rounded-xl ${
+                  player === userAddress
+                    ? 'bg-indigo-500/10 border border-indigo-500/20'
+                    : 'bg-slate-800'
+                }`}
+              >
+                <div className='flex justify-between items-center'>
+                  <div className='flex items-center gap-3'>
+                    <div
+                      className={`p-2 rounded-lg ${
+                        player === userAddress
+                          ? 'bg-indigo-500/20'
+                          : 'bg-slate-700'
+                      }`}
+                    >
+                      <Users
+                        className={`w-5 h-5 ${
+                          player === userAddress
+                            ? 'text-indigo-500'
+                            : 'text-slate-400'
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <div className='text-sm text-slate-400'>
+                        Player {index + 1}
+                      </div>
+                      <div className='font-medium'>{formatAddress(player)}</div>
+                    </div>
+                  </div>
+                  <div className='text-2xl font-bold'>{game.scores[index]}</div>
                 </div>
-                <span className='font-medium text-green-500'>
-                  {game.scores[0]} wins
-                </span>
               </div>
-
-              {/* VS Divider */}
-              <div className='my-2 flex items-center justify-center'>
-                <div className='rounded-full bg-gray-700 px-4 py-1 text-xs text-gray-400'>
-                  VS
-                </div>
-              </div>
-
-              {/* Player 2 */}
-              <div className='flex items-center justify-between'>
-                <div className='flex items-center space-x-2'>
-                  {player2Joined ? (
-                    <UserCheck className='h-4 w-4 text-green-500' />
-                  ) : (
-                    <UserX className='h-4 w-4 text-yellow-500' />
-                  )}
-                  <span className='text-sm text-gray-300'>
-                    {player2Joined
-                      ? formatAddress(game.players[1])
-                      : 'Waiting for player...'}
-                  </span>
-                </div>
-                <span className='font-medium text-green-500'>
-                  {game.scores[1]} wins
-                </span>
-              </div>
-            </div>
+            ))}
           </div>
 
-          {/* Game Stats */}
-          <div className='grid grid-cols-3 gap-4'>
-            <div className='rounded-lg bg-gray-800/50 p-3'>
-              <div className='mb-1 flex items-center text-gray-400'>
-                <Timer className='mr-2 h-4 w-4' />
-                <span className='text-xs'>Progress</span>
-              </div>
-              <div className='font-medium text-white'>
-                {game.roundsPlayed} / {gameTypeInfo.rounds} rounds
-              </div>
+          {/* Move History */}
+          <div className='mb-4 text-white'>
+            <div className='flex items-center justify-between mb-2'>
+              <h3 className='text-sm font-semibold'>Move History</h3>
+              <span className='text-xs text-slate-400'>
+                {completedRounds} round{completedRounds > 1 ? 's' : ''}
+              </span>
             </div>
+            <div className='space-y-2'>
+              {completedRounds === 0 ? (
+                <div className='p-3 bg-slate-800 rounded-lg text-center text-slate-400 text-sm'>
+                  No completed rounds yet
+                </div>
+              ) : (
+                Array.from({ length: completedRounds }).map((_, index) => {
+                  const myMove = myMoves[index];
+                  const opponentMove = opponentMoves[index];
 
-            <div className='rounded-lg bg-gray-800/50 p-3'>
-              <div className='mb-1 flex items-center text-gray-400'>
-                <CircleDollarSign className='mr-2 h-4 w-4' />
-                <span className='text-xs'>Total Stake</span>
-              </div>
-              <div className='font-medium text-white'>{formattedStake} ETH</div>
-            </div>
-
-            <div className='rounded-lg bg-gray-800/50 p-3'>
-              <div className='mb-1 flex items-center text-gray-400'>
-                <Trophy className='mr-2 h-4 w-4' />
-                <span className='text-xs'>Game Type</span>
-              </div>
-              <div className='font-medium text-white'>{gameTypeInfo.name}</div>
+                  return (
+                    <div
+                      key={index}
+                      className='flex items-center justify-between p-2 bg-slate-800 rounded-lg text-white'
+                    >
+                      <div className='flex items-center gap-1'>
+                        <span className='text-xs text-slate-400 w-4'>
+                          {index + 1}
+                        </span>
+                        <span className='text-xs mr-1'>Me</span>
+                        <div className='p-1.5 bg-slate-700 rounded'>
+                          {getMoveIcon(myMove)}
+                        </div>
+                      </div>
+                      <div className='flex items-center gap-1'>
+                        {getResultIcon(myMove, opponentMove)}
+                      </div>
+                      <div className='flex items-center gap-1'>
+                        <div className='p-1.5 bg-slate-700 rounded'>
+                          {getMoveIcon(opponentMove)}
+                        </div>
+                        <span className='text-xs'>
+                          {formatAddress(game.players[1 - playerIndex])}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>

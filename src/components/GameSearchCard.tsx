@@ -10,10 +10,12 @@ import {
   CircleDollarSign,
   CheckCircle2,
   Clock,
+  Loader,
 } from 'lucide-react';
 import { formatEther } from 'viem';
+import Link from 'next/link';
 
-const GameSearchCard = ({ game, onJoinGame, isLoading }) => {
+const GameSearchCard = ({ game, onJoinGame, isLoading, userAddress }) => {
   const getGameTypeInfo = (type) => {
     switch (Number(type)) {
       case 0:
@@ -43,12 +45,29 @@ const GameSearchCard = ({ game, onJoinGame, isLoading }) => {
     }
   };
 
-  if( !game || (game.players[0] === '0x0000000000000000000000000000000000000000' && game.players[1] === '0x0000000000000000000000000000000000000000') ) return <p>gotcha bug!</p>
+  if (
+    !game ||
+    (game.players[0] === '0x0000000000000000000000000000000000000000' &&
+      game.players[1] === '0x0000000000000000000000000000000000000000')
+  )
+    return (
+      <div className='flex flex-col items-center justify-center w-full h-full p-6 bg-gray-800 rounded-lg border-2 border-gray-700'>
+        {/* Updated to Game Not Found Component */}
+        <Gamepad2 className='w-12 h-12 text-red-500 mb-4' />
+        <p className='text-gray-300 text-lg'>
+          Game not found. Please check the game ID.
+        </p>
+      </div>
+    );
+  // return <p>gotcha bug!</p>;
 
   const gameTypeInfo = getGameTypeInfo(game.gameType);
   const formattedStake = formatEther(game.stake);
   const hasSecondPlayer =
     game.players[1] !== '0x0000000000000000000000000000000000000000';
+
+  const playerCompleteAndIsUserPlayer =
+    hasSecondPlayer && game.players.includes(userAddress);
 
   const copyGameId = () => {
     navigator.clipboard.writeText(game.gameId.toString());
@@ -120,31 +139,41 @@ const GameSearchCard = ({ game, onJoinGame, isLoading }) => {
           </div>
         </div>
 
-        <button
-          onClick={() => onJoinGame(game.gameId, game.stake)}
-          disabled={isLoading || hasSecondPlayer}
-          className={`w-full rounded-lg px-4 py-3 font-medium transition-all duration-200 
+        {!playerCompleteAndIsUserPlayer && (
+          <button
+            onClick={() => onJoinGame(game.gameId, game.stake)}
+            disabled={isLoading || hasSecondPlayer}
+            className={`w-full rounded-lg px-4 py-3 font-medium transition-all duration-200 
             ${
               hasSecondPlayer
                 ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
                 : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500'
             }
           `}
-        >
-          <span className='flex items-center justify-center gap-2'>
-            {hasSecondPlayer ? (
-              <>
-                <Users className='h-5 w-5' />
-                Game Full
-              </>
-            ) : (
-              <>
-                <User className='h-5 w-5' />
-                Join Game
-              </>
-            )}
-          </span>
-        </button>
+          >
+            <span className='flex items-center justify-center gap-2'>
+              {hasSecondPlayer ? (
+                <>
+                  <Users className='h-5 w-5' />
+                  Game Full
+                </>
+              ) : (
+                <>
+                  <User className='h-5 w-5' />
+                  Join Game
+                </>
+              )}
+            </span>
+          </button>
+        )}
+
+        {playerCompleteAndIsUserPlayer && (
+          <Link href={`/game/${game.gameId}`} passHref>
+            <button className='flex items-center justify-center p-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors w-full mt-5'>
+              Enter Game
+            </button>
+          </Link>
+        )}
       </div>
     </div>
   );

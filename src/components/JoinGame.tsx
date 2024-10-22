@@ -10,11 +10,12 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { formatEther, parseEther } from 'viem';
-import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
+import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi';
 import { abi, contractAddress } from '../constants/contractInfo';
 import GameSearchCard from './GameSearchCard';
 import toast from 'react-hot-toast';
 import { extractErrorMessages } from '../utils';
+
 
 // This would typically come from your contract interactions
 const mockActiveGames = [
@@ -42,6 +43,9 @@ export default function JoinGame() {
   const [activeGames, setActiveGames] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState<number|null>();
+  const [refreshToken, setRefreshToken] = useState('')
+  const account = useAccount()
+
   const proofedSearchQuery = searchQuery | 0
 
 
@@ -68,7 +72,7 @@ export default function JoinGame() {
         address: contractAddress,
         functionName: 'getGameById',
         args: [BigInt(proofedSearchQuery)],
-        // account: '0xd2135CfB216b74109775236E36d4b433F1DF507B',
+        scopeKey: refreshToken
       });
 
 
@@ -125,6 +129,7 @@ useEffect(() => {
         });
         // Reset form
       }
+      setRefreshToken(Date.now().toString())
     }, [isConfirmed]);
 
         React.useEffect(() => {
@@ -134,8 +139,6 @@ useEffect(() => {
               icon: '🎉',
             });
   console.log(error);
-
-  
           }
         }, [error]);
 
@@ -189,7 +192,7 @@ useEffect(() => {
               </button>
             </div>
           ) : (
-            <GameSearchCard game={gamesIdResult.data} isLoading={isPending} onJoinGame={()=>handleJoinGame(gamesIdResult.data.gameId, gamesIdResult.data.stake)} />
+            <GameSearchCard game={gamesIdResult.data} isLoading={isPending} onJoinGame={()=>handleJoinGame(gamesIdResult.data.gameId, gamesIdResult.data.stake)} userAddress={account.address} />
           )}
         </div>
       </div>
