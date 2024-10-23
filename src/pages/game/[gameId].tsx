@@ -108,6 +108,19 @@ const GameInterface = () => {
     }
   }, [error]);
 
+
+  if (!gameDetails) {
+    return (
+      <div className='flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white p-6'>
+        <Clock className='w-12 h-12 text-blue-500 animate-spin mb-4' />
+        <h2 className='text-2xl font-bold'>Loading Game...</h2>
+        <p className='text-slate-400'>
+          Please wait while we fetch the game details.
+        </p>
+      </div>
+    );
+  }
+
   // Early return for inactive games
   if (!gameDetails?.isActive && gameDetails?.roundsPlayed < 1) {
     return (

@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useEffect, useState } from 'react';
 import {
   Users,
@@ -58,7 +60,7 @@ const GameHistory = () => {
 
 
 
-  if (!gamesResult.length) {
+  if (!gamesResult) {
     return (
       <div className='flex flex-col items-center justify-center p-8 text-center'>
         <div className='mb-4 rounded-full bg-gray-800/50 p-4'>
