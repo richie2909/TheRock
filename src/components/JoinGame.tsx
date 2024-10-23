@@ -15,19 +15,8 @@ import { abi, contractAddress } from '../constants/contractInfo';
 import GameSearchCard from './GameSearchCard';
 import toast from 'react-hot-toast';
 import { extractErrorMessages } from '../utils';
+import { Game } from '../types';
 
-
-// This would typically come from your contract interactions
-const mockActiveGames = [
-  {
-    gameId: '0x123...abc',
-    creator: '0x456...def',
-    stake: '0.01',
-    gameType: 0,
-    createdAt: new Date().getTime() - 1000 * 60 * 5, // 5 minutes ago
-  },
-  // Add more mock games as needed
-];
 
 export default function JoinGame() {
       const {
@@ -40,40 +29,27 @@ export default function JoinGame() {
               useWaitForTransactionReceipt({
                 hash,
               });
-  const [activeGames, setActiveGames] = useState([]);
+  const [activeGames, setActiveGames] = useState<Game>();
   const [isLoading, setIsLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState<number|null>();
+  const [searchQuery, setSearchQuery] = useState<number>();
   const [refreshToken, setRefreshToken] = useState('')
   const account = useAccount()
 
-  const proofedSearchQuery = searchQuery | 0
+  const proofedSearchQuery = searchQuery || 0
 
 
-  // Function to get game type label
-  const getGameTypeLabel = (type) => {
-    const types = ['One Round', 'Best of Three', 'Best of Five'];
-    return types[type] || 'Unknown';
-  };
-
-  // const handleJoinGame = async (gameId, stake) => {
-  //   setIsLoading(true);
-  //   try {
-  //     // Contract interaction logic will go here
-  //     console.log('Joining game:', gameId, stake);
-  //   } catch (error) {
-  //     console.error('Error joining game:', error);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
-      const gamesIdResult = useReadContract({
+      const gameResult = useReadContract({
         abi,
         address: contractAddress,
         functionName: 'getGameById',
         args: [BigInt(proofedSearchQuery)],
         scopeKey: refreshToken
-      });
+      }) 
+
+      const data = gameResult.data as Game
+
+
+      
 
 
 
@@ -82,15 +58,15 @@ export default function JoinGame() {
     try {
       // Fetch active games logic will go here
 
-      console.log(gamesIdResult);
+      console.log(data);
       
-      setActiveGames(mockActiveGames);
+      setActiveGames(data as Game);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleJoinGame = async(id,stake)=>{
+  const handleJoinGame = async(id: bigint,stake:bigint)=>{
     console.log({id, stake});
     
     const toastId = toast.loading('Preparing to join game...',)
@@ -152,7 +128,7 @@ useEffect(() => {
             type='number'
             placeholder='Search game by ID'
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(Number(e.target.value))}
             className='w-full pl-10 pr-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-white'
           />
         </div>
@@ -172,14 +148,11 @@ useEffect(() => {
       {/* Active Games List */}
       <div className='space-y-4'>
         <div className='flex justify-between items-center'>
-          <h2 className='text-xl font-semibold text-gray-200'>Active Games</h2>
-          <span className='text-sm text-gray-400'>
-            {activeGames.length} available
-          </span>
+          <h2 className='text-xl font-semibold text-gray-200'>Search game by ID</h2>
         </div>
 
         <div className='space-y-4'>
-          {activeGames.length === 0 ? (
+          {!activeGames ? (
             <div className='text-center py-8 bg-gray-800 rounded-lg'>
               <Users className='w-12 h-12 text-gray-600 mx-auto mb-3' />
               <p className='text-gray-400'>No active games found</p>
@@ -192,7 +165,7 @@ useEffect(() => {
               </button>
             </div>
           ) : (
-            <GameSearchCard game={gamesIdResult.data} isLoading={isPending} onJoinGame={()=>handleJoinGame(gamesIdResult.data.gameId, gamesIdResult.data.stake)} userAddress={account.address} />
+            <GameSearchCard game={data} isLoading={isPending} onJoinGame={()=>handleJoinGame(data.gameId, data.stake)} userAddress={account.address} />
           )}
         </div>
       </div>

@@ -26,12 +26,12 @@ const NAV_ITEMS = [
   },
 ];
 
-const Layout = ({ children }) => {
+const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   const { isConnected } = useAccount();
   const router = useRouter(); // Initialize useRouter
 
-  const handleLinkClick = (path) => {
+  const handleLinkClick = (path: string) => {
     if (!isConnected && path !== '/') {
       toast.error('Please connect your wallet to access this feature.'); // Show error message
     }

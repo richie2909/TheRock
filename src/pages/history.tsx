@@ -5,10 +5,6 @@ import {
   Trophy,
   ChevronsUpDown,
   Gamepad2,
-  Timer,
-  CircleDollarSign,
-  UserCheck,
-  UserX,
   GamepadIcon,
   Play,
   X,
@@ -21,6 +17,7 @@ import { useAccount, useReadContract } from 'wagmi';
 import { abi, contractAddress } from '../constants/contractInfo';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { Game, GameHistoryCardProps } from '../types';
 
 
 
@@ -35,12 +32,17 @@ const GameHistory = () => {
       args: [account.address],
     });
 
-    const gamesResult = useReadContract({
+    const contractGamesResult = useReadContract({
       abi,
       address: contractAddress,
       functionName: 'getGamesInfo',
       args: [gamesIdResult.data],
     });
+
+    const gamesResult = contractGamesResult.data as Game[]
+    
+    console.log(gamesResult);
+    
 
     useEffect(() => {
       console.log('Effect triggered', account.address);
@@ -56,7 +58,7 @@ const GameHistory = () => {
 
 
 
-  if (!gamesResult.data || gamesResult?.data.length === 0) {
+  if (!gamesResult.length) {
     return (
       <div className='flex flex-col items-center justify-center p-8 text-center'>
         <div className='mb-4 rounded-full bg-gray-800/50 p-4'>
@@ -81,7 +83,7 @@ const GameHistory = () => {
   return (
     <div className='space-y-4'>
       <p>Game History</p>
-      {gamesResult?.data.map((game) => (
+      {gamesResult.map((game) => (
         <GameHistoryCard
           key={game.gameId.toString()}
           game={game}
@@ -94,17 +96,17 @@ const GameHistory = () => {
 
 // 
 
-const GameHistoryCard = ({ game, userAddress }) => {
+const GameHistoryCard:React.FC<GameHistoryCardProps> = ({ game, userAddress }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const router = useRouter();
 
-  const formatAddress = (address) => {
+  const formatAddress = (address: string) => {
     if (address === userAddress) return 'Me';
     if (address === '0x0000000000000000000000000000000000000000') return null;
     return `${address.slice(0, 4)}...${address.slice(-3)}`;
   };
 
-  const getGameTypeInfo = (type) => {
+  const getGameTypeInfo = (type: number) => {
     switch (Number(type)) {
       case 0:
         return {
@@ -137,18 +139,18 @@ const GameHistoryCard = ({ game, userAddress }) => {
     if (game.isActive)
       return { label: 'Active', color: 'bg-green-900/50 text-green-400' };
 
-    const playerIndex = game.players.indexOf(userAddress);
-    const myScore = game.scores[playerIndex];
-    const opponentScore = game.scores[1 - playerIndex];
+    const playerIndex =userAddress && game.players.indexOf(userAddress);
+    const myScore =playerIndex && game.scores[playerIndex];
+    const opponentScore =playerIndex && game.scores[1 - playerIndex];
 
     if (myScore === opponentScore)
       return { label: 'Tie', color: 'bg-yellow-900/50 text-yellow-400' };
-    if (myScore > opponentScore)
+    if (myScore && opponentScore && myScore > opponentScore)
       return { label: 'Won', color: 'bg-green-900/50 text-green-400' };
     return { label: 'Lost', color: 'bg-red-900/50 text-red-400' };
   };
 
-  const getMoveIcon = (move) => {
+  const getMoveIcon = (move: number) => {
     switch (Number(move)) {
       case 1:
         return '🗿';
@@ -161,7 +163,7 @@ const GameHistoryCard = ({ game, userAddress }) => {
     }
   };
 
-  const getResultIcon = (myMove, opponentMove) => {
+  const getResultIcon = (myMove: number, opponentMove: number) => {
     if (myMove === opponentMove) {
       return <Equal className='w-4 h-4 text-yellow-500' />;
     }
@@ -178,7 +180,7 @@ const GameHistoryCard = ({ game, userAddress }) => {
   const gameTypeInfo = getGameTypeInfo(game.gameType);
   const gameStatus = getGameStatus();
   const formattedStake = formatEther(game.stake);
-  const playerIndex = game.players.indexOf(userAddress);
+  const playerIndex =userAddress && game.players.indexOf(userAddress);
   const isPlayer1 = playerIndex === 0;
   const myMoves = isPlayer1 ? game.player1Moves : game.player2Moves;
   const opponentMoves = isPlayer1 ? game.player2Moves : game.player1Moves;
@@ -321,7 +323,7 @@ const GameHistoryCard = ({ game, userAddress }) => {
                           {getMoveIcon(opponentMove)}
                         </div>
                         <span className='text-xs'>
-                          {formatAddress(game.players[1 - playerIndex])}
+                          {playerIndex && formatAddress(game.players[1 - playerIndex])}
                         </span>
                       </div>
                     </div>

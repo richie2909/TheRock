@@ -1,15 +1,9 @@
 'use client';
 
 import type { NextPage } from "next";
-import { useState, useCallback } from "react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useConnect } from 'wagmi';
 import { injected } from 'wagmi/connectors';
 
-import GameCreation from "../components/GameCreation";
-import GamePlay from "../components/GamePlay";
-import GameResult from "../components/GameResult";
-import { useRockPaperScissors } from "../hooks/useRockPaperScissors";
 import Link from "next/link";
 import { Gamepad2, Wallet, Sword, ScrollText, Shield } from 'lucide-react';
 

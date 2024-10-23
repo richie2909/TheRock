@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Coins,
   Swords,
   Trophy,
   Gamepad2,
@@ -10,13 +9,18 @@ import {
   CircleDollarSign,
   CheckCircle2,
   Clock,
-  Loader,
 } from 'lucide-react';
 import { formatEther } from 'viem';
 import Link from 'next/link';
+import { GameSearchCardProps } from '../types';
 
-const GameSearchCard = ({ game, onJoinGame, isLoading, userAddress }) => {
-  const getGameTypeInfo = (type) => {
+const GameSearchCard: React.FC<GameSearchCardProps> = ({
+  game,
+  onJoinGame,
+  isLoading,
+  userAddress,
+}) => {
+  const getGameTypeInfo = (type: number) => {
     switch (Number(type)) {
       case 0:
         return {
@@ -59,15 +63,15 @@ const GameSearchCard = ({ game, onJoinGame, isLoading, userAddress }) => {
         </p>
       </div>
     );
-  // return <p>gotcha bug!</p>;
+
 
   const gameTypeInfo = getGameTypeInfo(game.gameType);
   const formattedStake = formatEther(game.stake);
   const hasSecondPlayer =
     game.players[1] !== '0x0000000000000000000000000000000000000000';
 
-  const playerCompleteAndIsUserPlayer =
-    hasSecondPlayer && game.players.includes(userAddress);
+   const playerCompleteAndIsUserPlayer =
+     hasSecondPlayer && userAddress && game.players.includes(userAddress);
 
   const copyGameId = () => {
     navigator.clipboard.writeText(game.gameId.toString());

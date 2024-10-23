@@ -28,7 +28,6 @@ import {
 import {
   useAccount,
   useReadContract,
-  useReadContracts,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from 'wagmi';
@@ -36,9 +35,9 @@ import { abi, contractAddress } from '../../constants/contractInfo';
 import { extractErrorMessages } from '../../utils';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import { Game, MoveColor, MoveType } from '../../types';
 
 const GameInterface = () => {
-  // ... (previous state and hooks remain the same until gameDetails)
   const [refreshData, setRefreshData] = useState('');
 
   const router = useRouter();
@@ -65,8 +64,8 @@ const GameInterface = () => {
 
   const [selectedMove, setSelectedMove] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [playerMove, setPlayerMove] = useState();
-  const gameDetails = gamesIdResult.data;
+  const [playerMove, setPlayerMove] = useState<number>();
+  const gameDetails = gamesIdResult.data as Game
   const userAddress = account.address;
   const gameEnded = !gameDetails?.isActive && gameDetails?.roundsPlayed > 0;
   console.log({ gameEnded });
@@ -134,7 +133,7 @@ const GameInterface = () => {
   }
 
   // Early return for non-players
-  if (!gameDetails?.players.includes(userAddress)) {
+  if (userAddress && !gameDetails?.players.includes(userAddress)) {
     return (
       <div className='flex flex-col items-center justify-center min-h-[400px] bg-slate-900 text-white p-6'>
         <div className='bg-slate-800/50 p-8 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col items-center max-w-md w-full'>
@@ -176,12 +175,12 @@ const GameInterface = () => {
     );
   }
 
-  const formatAddress = (address) => {
+  const formatAddress = (address: string) => {
     if (address === userAddress) return 'Me';
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
   };
 
-  const getGameTypeInfo = (type) => {
+  const getGameTypeInfo = (type: number) => {
     switch (Number(type)) {
       case 0:
         return {
@@ -214,7 +213,8 @@ const GameInterface = () => {
     }
   };
 
-  const handleMoveSelection = async (choice) => {
+
+  const handleMoveSelection = async (choice: MoveType) => {
     try {
       const moveMapping = {
         Rock: 1,
@@ -233,7 +233,11 @@ const GameInterface = () => {
   const gameType = getGameTypeInfo(gameDetails.gameType);
   const isPlayerTurn = !selectedMove;
 
-    const getMoveButton = (moveName, color, emoji) => (
+    const getMoveButton = (
+      moveName: MoveType,
+      color: MoveColor,
+      emoji: string
+    ) => (
       <button
         onClick={() => handleMoveSelection(moveName)}
         disabled={!isPlayerTurn || isSubmitting}
@@ -261,7 +265,6 @@ const GameInterface = () => {
         transition-colors
       `}
         >
-          {/* Use emoji instead of Icon */}
           <span
             className={selectedMove === moveName ? color.text : 'text-white'}
             style={{ fontSize: '32px' }}
@@ -291,7 +294,7 @@ const GameInterface = () => {
     },
   };
 
-  const getMoveIcon = (move) => {
+  const getMoveIcon = (move: number) => {
     switch (move) {
       case 1:
                 return '🗿';
@@ -303,20 +306,8 @@ const GameInterface = () => {
         return null;
     }
   };
-  // const getMoveIcon = (move) => {
-  //   switch (move) {
-  //     case 1:
-  //       return <Hand className='w-5 h-5' />;
-  //     case 2:
-  //       return <File className='w-5 h-5' />;
-  //     case 3:
-  //       return <Scissors className='w-5 h-5' />;
-  //     default:
-  //       return null;
-  //   }
-  // };
 
-  const getResultIcon = (player1Move, player2Move) => {
+  const getResultIcon = (player1Move: number, player2Move: number) => {
     if (!player1Move || !player2Move) return null;
 
     if (player1Move === player2Move) {
@@ -336,7 +327,7 @@ const GameInterface = () => {
   };
 
   const MoveHistory = () => {
-    const playerIndex = gameDetails.players.indexOf(userAddress);
+    const playerIndex = userAddress && gameDetails.players.indexOf(userAddress);
     const isPlayer1 = playerIndex === 0;
     const myMoves = isPlayer1
       ? gameDetails.player1Moves
@@ -346,7 +337,7 @@ const GameInterface = () => {
       : gameDetails.player1Moves;
     const completedRounds = Math.min(myMoves.length, opponentMoves.length);
 
-    const getResultIcon = (myMove, opponentMove) => {
+    const getResultIcon = (myMove: number, opponentMove: number) => {
       if (myMove === opponentMove) {
         return <Equal className='w-4 h-4 text-yellow-500' />;
       }
@@ -406,7 +397,7 @@ const GameInterface = () => {
                     {getMoveIcon(opponentMove)}
                   </div>
                   <span className='text-xs'>
-                    {formatAddress(gameDetails.players[1 - playerIndex])}
+                    {playerIndex && formatAddress(gameDetails.players[1 - playerIndex])}
                   </span>
                 </div>
               </div>
@@ -425,7 +416,8 @@ const GameInterface = () => {
       <h3 className='text-lg font-semibold mb-2'>Waiting for Move</h3>
       <p className='text-slate-400 text-center'>
         {`Waiting for ${formatAddress(
-          gameDetails.players.find((p) => p !== userAddress)
+          gameDetails.players.find((p) => p !== userAddress) ||
+            '0x0000000000000000000000000000000000000000'
         )} to make their move`}
       </p>
     </div>
@@ -434,7 +426,6 @@ const GameInterface = () => {
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white p-4'>
       <div className='w-full max-w-xl bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl p-6'>
-        {/* Header and Game Info sections remain the same */}
         {/* Header */}
         <div className='text-center mb-8'>
           <div className='flex items-center justify-center gap-3 mb-4'>
@@ -469,18 +460,18 @@ const GameInterface = () => {
           {gameEnded && (
             <div className='text-center mb-4'>
               {(() => {
-                const userScore =
+                const userScore =userAddress &&
                   gameDetails.scores[gameDetails.players.indexOf(userAddress)];
-                const opponentScore =
+                const opponentScore = userAddress &&
                   gameDetails.scores[
                     1 - gameDetails.players.indexOf(userAddress)
                   ];
 
-                if (userScore > opponentScore) {
+                if (userScore && opponentScore && userScore > opponentScore) {
                   return (
                     <p className='text-green-500 font-bold'>🎉 You win! 🎉</p>
                   );
-                } else if (userScore < opponentScore) {
+                } else if (userScore && opponentScore && userScore < opponentScore) {
                   return (
                     <p className='text-red-500 font-bold'>😢 You lose! 😢</p>
                   );
@@ -551,21 +542,15 @@ const GameInterface = () => {
           <div className='flex items-center justify-center mb-4'>
             <span className='text-sm text-slate-400 mr-2'>My last move:</span>
             {gameDetails.choices[1] === 1 && <Hand className='w-5 h-5' />}{' '}
-            {/* Rock */}
             {gameDetails.choices[1] === 2 && <File className='w-5 h-5' />}{' '}
-            {/* Paper */}
             {gameDetails.choices[1] === 3 && (
               <Scissors className='w-5 h-5' />
             )}{' '}
-            {/* Scissors */}
           </div>
         )}
         {gameDetails.lastPlayerMove !== userAddress && !gameEnded ? (
           <>
             <div className='grid grid-cols-3 gap-4 mb-6'>
-              {/* {getMoveButton('Rock', Hand, moveColors.Rock)}
-              {getMoveButton('Paper', File, moveColors.Paper)}
-              {getMoveButton('Scissors', Scissors, moveColors.Scissors)} */}
               {getMoveButton('Rock',  moveColors.Rock, '🗿')}
               {getMoveButton('Paper', moveColors.Paper, '📄')}
               {getMoveButton('Scissors', moveColors.Scissors, '✂️')}
