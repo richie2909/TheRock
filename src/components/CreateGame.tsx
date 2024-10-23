@@ -100,7 +100,7 @@ export default function CreateGame() {
 
     React.useEffect(() => {
       if (isConfirmed) {
-        toast.success('Game created successfully! 🎮', {
+        toast.success('Game created successfully!', {
           duration: 3000,
           icon: '🎉',
         });
@@ -114,7 +114,7 @@ export default function CreateGame() {
       if (error) {
         toast.error(extractErrorMessages(error?.message), {
           duration: 3000,
-          icon: '🎉',
+          icon: '❌',
         });
         console.log(error);
         

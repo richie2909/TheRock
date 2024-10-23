@@ -42,6 +42,17 @@ const GameHistory = () => {
       args: [gamesIdResult.data],
     });
 
+    useEffect(() => {
+      console.log('Effect triggered', account.address);
+      if (!account.address) {
+        router.push('/');
+        console.log('Redirecting to home, account address is not available');
+      } else {
+        console.log(account.address, 'logging account details');
+      }
+
+    }, [account.address, router]);
+
 
 
 
@@ -66,12 +77,6 @@ const GameHistory = () => {
     );
   }
 
-      useEffect(() => {
-        if (!account.address) {
-          router.push('/');
-        }
-        // todo add notification message when redirecting user
-      }, [account.address, router]);
 
   return (
     <div className='space-y-4'>

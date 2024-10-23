@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/router'; // Import useRouter
 import { Home, GamepadIcon, History } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { toast } from 'react-hot-toast'; // Import toast
+import { toast } from 'react-hot-toast'; 
 
 const NAV_ITEMS = [
   {
@@ -28,6 +29,7 @@ const NAV_ITEMS = [
 const Layout = ({ children }) => {
   const pathname = usePathname();
   const { isConnected } = useAccount();
+  const router = useRouter(); // Initialize useRouter
 
   const handleLinkClick = (path) => {
     if (!isConnected && path !== '/') {
@@ -40,11 +42,7 @@ const Layout = ({ children }) => {
       {/* Header */}
       <header className='fixed top-0 left-0 right-0 h-14 bg-gray-900 shadow-lg z-50'>
         <div className='flex items-center justify-between h-full px-4'>
-          {/* <h1 className='text-white text-lg font-semibold'>
-            Telegram Mini App
-          </h1> */}
           <Home />
-          {/* todo - reduce the size of this button */}
           <ConnectButton />
         </div>
       </header>
@@ -59,7 +57,9 @@ const Layout = ({ children }) => {
         <nav className='h-full'>
           <ul className='flex items-center justify-around h-full'>
             {NAV_ITEMS.map(({ path, label, icon: Icon }) => {
-              const isActive = pathname === path;
+              const isActive =
+                pathname === path ||
+                (path === '/game' && router.asPath.startsWith('/game')); // Update active condition
               return (
                 <li key={path} className='flex-1'>
                   <Link

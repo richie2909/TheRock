@@ -136,7 +136,7 @@ useEffect(() => {
           if (error) {
             toast.error(extractErrorMessages(error?.message), {
               duration: 3000,
-              icon: '🎉',
+              icon: '❌',
             });
   console.log(error);
           }

@@ -91,7 +91,7 @@ const GameInterface = () => {
 
   React.useEffect(() => {
     if (isConfirmed) {
-      toast.success('Game created successfully! 🎮', {
+      toast.success('Move successfully made!', {
         duration: 3000,
         icon: '🎉',
       });
@@ -103,7 +103,7 @@ const GameInterface = () => {
     if (error) {
       toast.error(extractErrorMessages(error?.message), {
         duration: 3000,
-        icon: '🎉',
+        icon: '❌',
       });
       console.log(error);
     }
@@ -232,43 +232,6 @@ const GameInterface = () => {
 
   const gameType = getGameTypeInfo(gameDetails.gameType);
   const isPlayerTurn = !selectedMove;
-
-  // const getMoveButton = (moveName, Icon, color) => (
-  //   <button
-  //     onClick={() => handleMoveSelection(moveName)}
-  //     disabled={!isPlayerTurn || isSubmitting}
-  //     className={`
-  //       relative flex flex-col items-center justify-center p-6 rounded-xl
-  //       ${
-  //         selectedMove === moveName
-  //           ? `${color.bg} ${color.text}`
-  //           : 'bg-slate-800 hover:bg-slate-700'
-  //       }
-  //       ${isPlayerTurn ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}
-  //       transition-all duration-200 ease-out
-  //       disabled:opacity-50 disabled:cursor-not-allowed
-  //       group
-  //     `}
-  //   >
-  //     <div
-  //       className={`
-  //       p-3 rounded-lg mb-2
-  //       ${
-  //         selectedMove === moveName
-  //           ? color.iconBg
-  //           : 'bg-slate-700 group-hover:bg-slate-600'
-  //       }
-  //       transition-colors
-  //     `}
-  //     >
-  //       <Icon
-  //         size={32}
-  //         className={selectedMove === moveName ? color.text : 'text-white'}
-  //       />
-  //     </div>
-  //     <span className='text-lg font-medium'>{moveName}</span>
-  //   </button>
-  // );
 
     const getMoveButton = (moveName, color, emoji) => (
       <button
