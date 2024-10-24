@@ -7,6 +7,7 @@ import { Home, GamepadIcon, History } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { toast } from 'react-hot-toast'; 
+import Image from 'next/image';
 
 const NAV_ITEMS = [
   {
@@ -42,7 +43,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {/* Header */}
       <header className='fixed top-0 left-0 right-0 h-14 bg-gray-900 shadow-lg z-50'>
         <div className='flex items-center justify-between h-full px-4'>
-          <Home />
+          <Image
+            src='/rps-img.webp' // Update with your image path
+            alt='Rock Paper scissor' // Provide an alt text for accessibility
+            width={40} // Set the desired width
+            height={40} // Set the desired height
+            className='ml-2' // Add margin to the left for spacing
+          />
           <ConnectButton />
         </div>
       </header>
