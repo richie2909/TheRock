@@ -46,7 +46,7 @@ export default function JoinGame() {
         scopeKey: refreshToken
       }) 
 
-      const data = gameResult.data as Game
+      const data = gameResult.data as Game | undefined
 
 
       
@@ -57,18 +57,14 @@ export default function JoinGame() {
     setIsLoading(true);
     try {
       // Fetch active games logic will go here
-
-      console.log(data);
       
-      setActiveGames(data as Game);
+      setActiveGames(data as Game | undefined);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleJoinGame = async(id: bigint,stake:bigint)=>{
-    console.log({id, stake});
-    
+  const handleJoinGame = async(id: bigint | undefined,stake:bigint | undefined)=>{
     const toastId = toast.loading('Preparing to join game...',)
 try {
   await writeContract({
@@ -165,7 +161,7 @@ useEffect(() => {
               </button>
             </div>
           ) : (
-            <GameSearchCard game={data} isLoading={isPending} onJoinGame={()=>handleJoinGame(data.gameId, data.stake)} userAddress={account.address} />
+            <GameSearchCard game={data} isLoading={isPending} onJoinGame={()=>handleJoinGame(data?.gameId, data?.stake)} userAddress={account.address} />
           )}
         </div>
       </div>

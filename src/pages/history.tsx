@@ -43,18 +43,11 @@ const GameHistory = () => {
 
     const gamesResult = contractGamesResult.data as Game[]
     
-    console.log(gamesResult);
-    
 
     useEffect(() => {
-      console.log('Effect triggered', account.address);
       if (!account.address) {
         router.push('/');
-        console.log('Redirecting to home, account address is not available');
-      } else {
-        console.log(account.address, 'logging account details');
-      }
-
+      } 
     }, [account.address, router]);
 
 
@@ -136,20 +129,45 @@ const GameHistoryCard:React.FC<GameHistoryCardProps> = ({ game, userAddress }) =
         };
     }
   };
-
   const getGameStatus = () => {
-    if (game.isActive)
+
+    if (game.isActive) {
       return { label: 'Active', color: 'bg-green-900/50 text-green-400' };
+    }
 
-    const playerIndex =userAddress && game.players.indexOf(userAddress);
-    const myScore =playerIndex && game.scores[playerIndex];
-    const opponentScore =playerIndex && game.scores[1 - playerIndex];
 
-    if (myScore === opponentScore)
+    const playerIndex = userAddress && game.players.indexOf(userAddress);
+
+
+    if (playerIndex === -1) {
+      return { label: 'Not a Player', color: 'bg-gray-900/50 text-gray-400' };
+    }
+
+ 
+    if (playerIndex === undefined || playerIndex < 0) {
+      return { label: 'Invalid Player', color: 'bg-red-900/50 text-red-400' };
+    }
+
+  
+    const myScore = game.scores[playerIndex];
+    const opponentScore = game.scores[1 - playerIndex]; 
+
+ 
+    if (myScore === undefined || opponentScore === undefined) {
+      return { label: 'Not Scored', color: 'bg-yellow-900/50 text-yellow-400' };
+    }
+
+
+    if (myScore === opponentScore) {
       return { label: 'Tie', color: 'bg-yellow-900/50 text-yellow-400' };
-    if (myScore && opponentScore && myScore > opponentScore)
+    }
+
+
+    if (myScore > opponentScore) {
       return { label: 'Won', color: 'bg-green-900/50 text-green-400' };
-    return { label: 'Lost', color: 'bg-red-900/50 text-red-400' };
+    } else {
+      return { label: 'Lost', color: 'bg-red-900/50 text-red-400' };
+    }
   };
 
   const getMoveIcon = (move: number) => {

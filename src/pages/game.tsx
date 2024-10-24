@@ -12,12 +12,12 @@ export default function GamePage() {
   const {address} = useAccount();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!address) {
-      router.push('/'); 
-    }
-    // todo add notification message when redirecting user
-  }, [address, router]);
+  // useEffect(() => {
+  //   if (!address) {
+  //     router.push('/'); 
+  //   }
+
+  // }, [address, router]);
 
   return (
     <div className='space-y-6'>

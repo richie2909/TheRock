@@ -40,11 +40,11 @@ export default function CreateGame() {
             address: contractAddress,
             abi,
             eventName: 'GameCreated',
-            onLogs(logs) {
-              console.log('before logs');
-
-              console.log('New logs!', logs);
-              console.log('after logs');
+            onLogs(logs: any) {
+              const createdGameID = logs && logs[0]?.args?.gameId
+                    toast.success(`Game of ID ${createdGameID} created`, {
+                      duration: 3000,
+                    });
             },
           });
     
@@ -55,8 +55,6 @@ export default function CreateGame() {
         
   const [selectedType, setSelectedType] = useState(0);
   const [stakeAmount, setStakeAmount] = useState('');
-
-  // console.log({ isConfirming, isConfirmed });
   
 
 

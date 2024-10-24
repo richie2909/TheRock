@@ -14,7 +14,7 @@ export interface Game {
 }
 
 export interface GameSearchCardProps {
-  game: Game;
+  game: Game | undefined;
   onJoinGame: (gameId: bigint, stake: bigint) => void;
   isLoading: boolean;
   userAddress: `0x${string}` | undefined;

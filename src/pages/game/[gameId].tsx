@@ -78,7 +78,6 @@ const GameInterface = () => {
         functionName: 'makeMove',
         args: [BigInt(proofedGamedId), playerMove],
       });
-      console.log(gamesIdResult);
     } catch (error) {
       console.log(error);
     }
@@ -473,28 +472,47 @@ const GameInterface = () => {
           {gameEnded && (
             <div className='text-center mb-4'>
               {(() => {
-                const userScore =userAddress &&
-                  gameDetails.scores[gameDetails.players.indexOf(userAddress)];
-                const opponentScore = userAddress &&
-                  gameDetails.scores[
-                    1 - gameDetails.players.indexOf(userAddress)
-                  ];
+                const getScore = (
+                  address: string | undefined,
+                  gameDetails: Game
+                ) => {
+                  if (!address) return null;
+                  const playerIndex = gameDetails.players.indexOf(address);
+                  return gameDetails.scores[playerIndex] ?? null;
+                };
 
-                if (userScore && opponentScore && userScore > opponentScore) {
-                  return (
-                    <p className='text-green-500 font-bold'>🎉 You win! 🎉</p>
-                  );
-                } else if (userScore && opponentScore && userScore < opponentScore) {
-                  return (
-                    <p className='text-red-500 font-bold'>😢 You lose! 😢</p>
-                  );
-                } else {
+                const userScore = getScore(userAddress, gameDetails);
+                const opponentScore = getScore(
+                  gameDetails.players.find((player) => player !== userAddress),
+                  gameDetails
+                );
+
+                const renderResultMessage = () => {
+                  if (userScore === null || opponentScore === null) {
+                    return (
+                      <p className='text-gray-500'>
+                        Game results are unavailable.
+                      </p>
+                    );
+                  }
+                  if (userScore > opponentScore) {
+                    return (
+                      <p className='text-green-500 font-bold'>🎉 You win! 🎉</p>
+                    );
+                  }
+                  if (userScore < opponentScore) {
+                    return (
+                      <p className='text-red-500 font-bold'>😢 You lose! 😢</p>
+                    );
+                  }
                   return (
                     <p className='text-yellow-500 font-bold'>
                       🤝 It's a tie! 🤝
                     </p>
                   );
-                }
+                };
+
+                return renderResultMessage();
               })()}
             </div>
           )}
@@ -507,7 +525,6 @@ const GameInterface = () => {
               {formatEther(gameDetails.stake)} ETH
             </span>
           </div>
-
           {gameDetails.players.map((player, index) => (
             <div
               key={player}
@@ -556,15 +573,13 @@ const GameInterface = () => {
             <span className='text-sm text-slate-400 mr-2'>My last move:</span>
             {gameDetails.choices[1] === 1 && <Hand className='w-5 h-5' />}{' '}
             {gameDetails.choices[1] === 2 && <File className='w-5 h-5' />}{' '}
-            {gameDetails.choices[1] === 3 && (
-              <Scissors className='w-5 h-5' />
-            )}{' '}
+            {gameDetails.choices[1] === 3 && <Scissors className='w-5 h-5' />}{' '}
           </div>
         )}
         {gameDetails.lastPlayerMove !== userAddress && !gameEnded ? (
           <>
             <div className='grid grid-cols-3 gap-4 mb-6'>
-              {getMoveButton('Rock',  moveColors.Rock, '🗿')}
+              {getMoveButton('Rock', moveColors.Rock, '🗿')}
               {getMoveButton('Paper', moveColors.Paper, '📄')}
               {getMoveButton('Scissors', moveColors.Scissors, '✂️')}
             </div>
