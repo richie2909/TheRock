@@ -518,13 +518,16 @@ const GameInterface = () => {
                     return gameDetails?.scores[playerIndex] ?? null;
                   };
 
-                  const userScore = gameDetails && getScore(userAddress, gameDetails);
-                  const opponentScore = gameDetails && getScore(
-                    gameDetails?.players.find(
-                      (player) => player !== userAddress
-                    ),
-                    gameDetails
-                  );
+                  const userScore =
+                    gameDetails && getScore(userAddress, gameDetails);
+                  const opponentScore =
+                    gameDetails &&
+                    getScore(
+                      gameDetails?.players.find(
+                        (player) => player !== userAddress
+                      ),
+                      gameDetails
+                    );
 
                   const renderResultMessage = () => {
                     if (userScore === null || opponentScore === null) {
@@ -610,15 +613,42 @@ const GameInterface = () => {
           </div>
 
           <MoveHistory />
-
+          {/* 
           {gameDetails?.lastPlayerMove === userAddress && (
             <div className='flex items-center justify-center mb-4'>
-              <span className='text-sm text-slate-400 mr-2'>My last move:</span>
+              <span className='text-sm text-slate-400 mr-2'>
+                My last move:
+              </span>
               {gameDetails?.choices[1] === 1 && (
                 <Hand className='w-5 h-5' />
               )}{' '}
               {gameDetails?.choices[1] === 2 && <File className='w-5 h-5' />}{' '}
-              {gameDetails?.choices[1] === 3 && <Scissors className='w-5 h-5' />}{' '}
+              {gameDetails?.choices[1] === 3 && (
+                <Scissors className='w-5 h-5' />
+              )}{' '}
+            </div>
+          )} */}
+          {gameDetails?.lastPlayerMove === userAddress && (
+            <div className='flex items-center justify-center mb-4'>
+              <span className='text-sm text-slate-400 mr-2'>My last move:</span>
+              {gameDetails?.choices[1] === 1 && (
+                <span className='text-2xl'>🗿</span> // Render emoji for Rock
+              )}{' '}
+              {gameDetails?.choices[1] === 2 && (
+                <span className='text-2xl'>📄</span> // Render emoji for Paper
+              )}{' '}
+              {gameDetails?.choices[1] === 3 && (
+                <span className='text-2xl'>✂️</span> // Render emoji for Scissors
+              )}{' '}
+              {gameDetails?.choices[0] === 1 && (
+                <span className='text-2xl'>🗿</span> // Render emoji for Rock
+              )}{' '}
+              {gameDetails?.choices[0] === 2 && (
+                <span className='text-2xl'>📄</span> // Render emoji for Paper
+              )}{' '}
+              {gameDetails?.choices[0] === 3 && (
+                <span className='text-2xl'>✂️</span> // Render emoji for Scissors
+              )}{' '}
             </div>
           )}
           {gameDetails?.lastPlayerMove !== userAddress && !gameEnded ? (
