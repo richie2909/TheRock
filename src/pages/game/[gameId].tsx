@@ -178,7 +178,7 @@ const GameInterface = () => {
 
   // Early return for waiting for players
   if (
-    gameDetails.players.includes('0x0000000000000000000000000000000000000000')
+    gameDetails?.players.includes('0x0000000000000000000000000000000000000000')
   ) {
     return (
       <ErrorBoundary fallback={<div>Something went wrong</div>}>
@@ -252,7 +252,7 @@ const GameInterface = () => {
     }
   };
 
-  const gameType = getGameTypeInfo(gameDetails.gameType);
+  const gameType = getGameTypeInfo(gameDetails?.gameType);
   const isPlayerTurn = !selectedMove;
 
     const getMoveButton = (
@@ -349,14 +349,14 @@ const GameInterface = () => {
   };
 
   const MoveHistory = () => {
-    const playerIndex = userAddress && gameDetails.players.indexOf(userAddress);
+    const playerIndex = userAddress && gameDetails?.players.indexOf(userAddress);
     const isPlayer1 = playerIndex === 0;
     const myMoves = isPlayer1
-      ? gameDetails.player1Moves
-      : gameDetails.player2Moves;
+      ? gameDetails?.player1Moves
+      : gameDetails?.player2Moves;
     const opponentMoves = isPlayer1
-      ? gameDetails.player2Moves
-      : gameDetails.player1Moves;
+      ? gameDetails?.player2Moves
+      : gameDetails?.player1Moves;
     const completedRounds = Math.min(myMoves.length, opponentMoves.length);
 
     const getResultIcon = (myMove: number, opponentMove: number) => {
@@ -423,7 +423,7 @@ const GameInterface = () => {
                     </div>
                     <span className='text-xs'>
                       {playerIndex &&
-                        formatAddress(gameDetails.players[1 - playerIndex])}
+                        formatAddress(gameDetails??.players[1 - playerIndex])}
                     </span>
                   </div>
                 </div>
@@ -444,7 +444,7 @@ const GameInterface = () => {
         <h3 className='text-lg font-semibold mb-2'>Waiting for Move</h3>
         <p className='text-slate-400 text-center'>
           {`Waiting for ${formatAddress(
-            gameDetails.players.find((p) => p !== userAddress) ||
+            gameDetails?.players.find((p) => p !== userAddress) ||
               '0x0000000000000000000000000000000000000000'
           )} to make their move`}
         </p>
@@ -468,18 +468,18 @@ const GameInterface = () => {
             <div className='flex justify-between items-center px-4 py-2 bg-slate-800 rounded-xl'>
               <div className='flex items-center gap-2'>
                 <Trophy className='w-5 h-5 text-indigo-400' />
-                <span>Game #{Number(gameDetails.gameId)}</span>
+                <span>Game #{Number(gameDetails?.gameId)}</span>
               </div>
               <div className='flex items-center gap-2'>
                 <Circle
                   className={
-                    gameDetails.isActive
+                    gameDetails?.isActive
                       ? 'w-4 h-4 text-green-500'
                       : 'w-4 h-4 text-red-500'
                   }
                 />
                 <span className='text-sm'>
-                  Round {gameDetails.roundsPlayed + 1}/{gameType.rounds}
+                  Round {gameDetails?.roundsPlayed + 1}/{gameType.rounds}
                 </span>
               </div>
             </div>
@@ -495,13 +495,13 @@ const GameInterface = () => {
                     gameDetails: Game
                   ) => {
                     if (!address) return null;
-                    const playerIndex = gameDetails.players.indexOf(address);
-                    return gameDetails.scores[playerIndex] ?? null;
+                    const playerIndex = gameDetails?.players.indexOf(address);
+                    return gameDetails?.scores[playerIndex] ?? null;
                   };
 
-                  const userScore = getScore(userAddress, gameDetails);
-                  const opponentScore = getScore(
-                    gameDetails.players.find(
+                  const userScore = gameDetails && getScore(userAddress, gameDetails);
+                  const opponentScore = gameDetails && getScore(
+                    gameDetails?.players.find(
                       (player) => player !== userAddress
                     ),
                     gameDetails
@@ -546,10 +546,10 @@ const GameInterface = () => {
                 <span>Stake</span>
               </div>
               <span className='font-bold text-yellow-500'>
-                {formatEther(gameDetails.stake)} ETH
+                {formatEther(gameDetails?.stake)} ETH
               </span>
             </div>
-            {gameDetails.players.map((player, index) => (
+            {gameDetails?.players.map((player, index) => (
               <div
                 key={player}
                 className={`p-4 rounded-xl ${
@@ -583,7 +583,7 @@ const GameInterface = () => {
                     </div>
                   </div>
                   <div className='text-2xl font-bold'>
-                    {gameDetails.scores[index]}
+                    {gameDetails?.scores[index]}
                   </div>
                 </div>
               </div>
@@ -592,17 +592,17 @@ const GameInterface = () => {
 
           <MoveHistory />
 
-          {gameDetails.lastPlayerMove === userAddress && (
+          {gameDetails?.lastPlayerMove === userAddress && (
             <div className='flex items-center justify-center mb-4'>
               <span className='text-sm text-slate-400 mr-2'>My last move:</span>
-              {gameDetails.choices[1] === 1 && (
+              {gameDetails?.choices[1] === 1 && (
                 <Hand className='w-5 h-5' />
               )}{' '}
-              {gameDetails.choices[1] === 2 && <File className='w-5 h-5' />}{' '}
-              {gameDetails.choices[1] === 3 && <Scissors className='w-5 h-5' />}{' '}
+              {gameDetails?.choices[1] === 2 && <File className='w-5 h-5' />}{' '}
+              {gameDetails?.choices[1] === 3 && <Scissors className='w-5 h-5' />}{' '}
             </div>
           )}
-          {gameDetails.lastPlayerMove !== userAddress && !gameEnded ? (
+          {gameDetails?.lastPlayerMove !== userAddress && !gameEnded ? (
             <>
               <div className='grid grid-cols-3 gap-4 mb-6'>
                 {getMoveButton('Rock', moveColors.Rock, '🗿')}
@@ -632,7 +632,7 @@ const GameInterface = () => {
                 </button>
               )}
             </>
-          ) : gameDetails.lastPlayerMove === userAddress ? (
+          ) : gameDetails?.lastPlayerMove === userAddress ? (
             <WaitingForMove />
           ) : (
             <></>
