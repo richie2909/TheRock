@@ -31,6 +31,7 @@ const GAME_TYPES = [
     description: 'First to win 3 rounds',
     icon: Trophy,
     matches: '5 Rounds',
+    
   },
 ];
 
