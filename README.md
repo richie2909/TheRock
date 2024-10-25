@@ -1,29 +1,74 @@
-This is a [RainbowKit](https://rainbowkit.com) + [wagmi](https://wagmi.sh) + [Next.js](https://nextjs.org/) project bootstrapped with [`create-rainbowkit`](/packages/create-rainbowkit).
+# Rock-Paper-Scissors on Ethereum
+
+This is a decentralized Rock-Paper-Scissors game built on the Ethereum Sepolia network. The application allows users to create and join games, track their move history, and view past game results, all while ensuring transparency and fairness through blockchain technology.
+
+## Table of Contents
+
+- [Getting Started](#getting-started)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Team Information](#team-information)
+- [License](#license)
 
 ## Getting Started
 
-First, run the development server:
+To get started with the project, follow these steps:
 
-```bash
-npm run dev
-```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/rockpaperscissors.git
+   cd rockpaperscissors
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install the dependencies:
+   ```bash
+   npm install
+   ```
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-## Learn More
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
-To learn more about this stack, take a look at the following resources:
+## Features
 
-- [RainbowKit Documentation](https://rainbowkit.com) - Learn how to customize your wallet connection flow.
-- [wagmi Documentation](https://wagmi.sh) - Learn how to interact with Ethereum.
-- [Next.js Documentation](https://nextjs.org/docs) - Learn how to build a Next.js application.
+- **Home Page**: Provides an overview of the game and a button to navigate to the game tab.
+- **Game Tab**: 
+  - **Create Game**: Users can create a game by selecting the game type (Quick Match, Best of Three, Championship) and setting a stake in Sepolia ETH.
+  - **Join Game**: Users can search for existing games using a game ID and join if there is an available slot.
+- **Real-Time Gameplay**: Players are notified of their opponent's moves, and results are displayed only after both players have made their moves.
+- **History Tab**: Users can view their past games and move history for transparency.
 
-You can check out [the RainbowKit GitHub repository](https://github.com/rainbow-me/rainbowkit) - your feedback and contributions are welcome!
+## Architecture
 
-## Deploy on Vercel
+The application is structured as follows:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Frontend**: Built with Next.js, utilizing React for the UI and Wagmi for Ethereum interactions.
+- **Smart Contracts**: The game logic is implemented in Solidity, ensuring secure and transparent gameplay.
+- **Blockchain**: All game states and transactions are recorded on the Ethereum Sepolia network.
 
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Key Components
+
+- **Smart Contract**: `rockpaperscissors.sol` - Contains the game logic, including game creation, joining, and move handling.
+- **Frontend Pages**: 
+  - `src/pages/index.tsx`: Home page.
+  - `src/pages/game.tsx`: Game creation and joining interface.
+  - `src/pages/history.tsx`: Displays the user's game history.
+- **Components**: 
+  - `CreateGame.tsx`: UI for creating a game.
+  - `JoinGame.tsx`: UI for joining a game.
+  - `GameInterface.tsx`: Displays the game in progress.
+
+## Team Information
+
+- **Yinkatotti**: Solidity Developer  
+  Yinkatotti is responsible for developing the smart contracts that power the rock-paper-scissors game, ensuring secure and efficient game logic.
+
+- **Ayoashy**: Frontend Engineer  
+  Ayoashy focuses on building the user interface of the application, creating an engaging and intuitive experience for players.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

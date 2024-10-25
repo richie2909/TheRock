@@ -4,9 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { formatEther } from 'viem';
 import {
-  Hand,
-  Scissors,
-  File,
   Trophy,
   Timer,
   AlertCircle,
@@ -80,6 +77,18 @@ const GameInterface = () => {
                                    duration: 30000,
                                  });
                                }
+                }
+              },
+            });
+
+
+            useWatchContractEvent({
+              address: contractAddress,
+              abi,
+              eventName: 'GameJoined',
+              onLogs(logs: any) {
+                if (logs) {
+                  setRefreshData(Date.now().toString());
                 }
               },
             });
