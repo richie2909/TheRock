@@ -35,6 +35,7 @@ export default function JoinGame() {
   const [searchQuery, setSearchQuery] = useState<number>();
   const [refreshToken, setRefreshToken] = useState('')
   const account = useAccount()
+  const userAddress = account.address || undefined
 
   const proofedSearchQuery = searchQuery || 0
 
@@ -116,58 +117,65 @@ useEffect(() => {
         }, [error]);
 
   return (
-        <ErrorBoundary fallback={<div>Something went wrong</div>}>
-    <div className='space-y-6 text-white'>
-      {/* Search and Refresh Section */}
-      <div className='flex gap-4'>
-        <div className='flex-1 relative'>
-          <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />
-          <input
-            type='number'
-            placeholder='Search game by ID'
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(Number(e.target.value))}
-            className='w-full pl-10 pr-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-white'
-          />
-        </div>
-        <button
-          onClick={handleSearch}
-          className='p-3 bg-gray-800 border-2 border-gray-700 rounded-lg hover:border-gray-600 transition-colors'
-        >
-          {/* // this should be search */}
-          <RefreshCcw
-            className={`w-5 h-5 text-gray-400 ${
-              isLoading ? 'animate-spin' : ''
-            }`}
-          />
-        </button>
-      </div>
-
-      {/* Active Games List */}
-      <div className='space-y-4'>
-        <div className='flex justify-between items-center'>
-          <h2 className='text-xl font-semibold text-gray-200'>Search game by ID</h2>
+    <ErrorBoundary fallback={<div>Something went wrong</div>}>
+      <div className='space-y-6 text-white'>
+        {/* Search and Refresh Section */}
+        <div className='flex gap-4'>
+          <div className='flex-1 relative'>
+            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />
+            <input
+              type='number'
+              placeholder='Search game by ID'
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(Number(e.target.value))}
+              className='w-full pl-10 pr-4 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-white'
+            />
+          </div>
+          <button
+            onClick={handleSearch}
+            className='p-3 bg-gray-800 border-2 border-gray-700 rounded-lg hover:border-gray-600 transition-colors'
+          >
+            {/* // this should be search */}
+            <RefreshCcw
+              className={`w-5 h-5 text-gray-400 ${
+                isLoading ? 'animate-spin' : ''
+              }`}
+            />
+          </button>
         </div>
 
+        {/* Active Games List */}
         <div className='space-y-4'>
-          {!activeGames ? (
-            <div className='text-center py-8 bg-gray-800 rounded-lg'>
-              <Users className='w-12 h-12 text-gray-600 mx-auto mb-3' />
-              <p className='text-gray-400'>No active games found</p>
-              <button
-                onClick={handleSearch}
-                className='mt-4 text-blue-400 hover:text-blue-300 text-sm flex items-center justify-center gap-2'
-              >
-                <RefreshCcw className='w-4 h-4' />
-                Refresh games
-              </button>
-            </div>
-          ) : (
-            <GameSearchCard game={data} isLoading={isPending} onJoinGame={()=>handleJoinGame(data?.gameId, data?.stake)} userAddress={account.address} />
-          )}
+          <div className='flex justify-between items-center'>
+            <h2 className='text-xl font-semibold text-gray-200'>
+              Search game by ID
+            </h2>
+          </div>
+
+          <div className='space-y-4'>
+            {!activeGames ? (
+              <div className='text-center py-8 bg-gray-800 rounded-lg'>
+                <Users className='w-12 h-12 text-gray-600 mx-auto mb-3' />
+                <p className='text-gray-400'>No active games found</p>
+                <button
+                  onClick={handleSearch}
+                  className='mt-4 text-blue-400 hover:text-blue-300 text-sm flex items-center justify-center gap-2'
+                >
+                  <RefreshCcw className='w-4 h-4' />
+                  Refresh games
+                </button>
+              </div>
+            ) : (
+              <GameSearchCard
+                game={data}
+                isLoading={isPending}
+                onJoinGame={() => handleJoinGame(data?.gameId, data?.stake)}
+                userAddress={userAddress}
+              />
+            )}
+          </div>
         </div>
       </div>
-    </div>
     </ErrorBoundary>
   );
 }

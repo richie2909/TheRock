@@ -51,8 +51,8 @@ const GameSearchCard: React.FC<GameSearchCardProps> = ({
 
   if (
     !game ||
-    (game.players[0] === '0x0000000000000000000000000000000000000000' &&
-      game.players[1] === '0x0000000000000000000000000000000000000000')
+    (game?.players[0] === '0x0000000000000000000000000000000000000000' &&
+      game?.players[1] === '0x0000000000000000000000000000000000000000')
   )
     return (
       <div className='flex flex-col items-center justify-center w-full h-full p-6 bg-gray-800 rounded-lg border-2 border-gray-700'>
@@ -65,16 +65,16 @@ const GameSearchCard: React.FC<GameSearchCardProps> = ({
     );
 
 
-  const gameTypeInfo = getGameTypeInfo(game.gameType);
-  const formattedStake = formatEther(game.stake);
+  const gameTypeInfo = getGameTypeInfo(game?.gameType);
+  const formattedStake = formatEther(game?.stake);
   const hasSecondPlayer =
-    game.players[1] !== '0x0000000000000000000000000000000000000000';
+    game?.players[1] !== '0x0000000000000000000000000000000000000000';
 
    const playerCompleteAndIsUserPlayer =
-     hasSecondPlayer && userAddress && game.players.includes(userAddress);
+     hasSecondPlayer && userAddress && game?.players.includes(userAddress);
 
   const copyGameId = () => {
-    navigator.clipboard.writeText(game.gameId.toString());
+    navigator.clipboard.writeText(game?.gameId.toString());
   };
 
   return (
@@ -88,7 +88,7 @@ const GameSearchCard: React.FC<GameSearchCardProps> = ({
           <div>
             <div className='flex items-center gap-2'>
               <h3 className='text-lg font-semibold text-white'>
-                Game #{game.gameId.toString()}
+                Game #{game?.gameId.toString()}
               </h3>
               <button
                 onClick={copyGameId}
@@ -100,12 +100,12 @@ const GameSearchCard: React.FC<GameSearchCardProps> = ({
               <span
                 className={`ml-2 flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium
                 ${
-                  game.isActive
+                  game?.isActive
                     ? 'bg-green-900/50 text-green-400'
                     : 'bg-gray-700 text-gray-400'
                 }`}
               >
-                {game.isActive ? (
+                {game?.isActive ? (
                   <>
                     <CheckCircle2 className='h-3 w-3' /> Active
                   </>
@@ -145,7 +145,7 @@ const GameSearchCard: React.FC<GameSearchCardProps> = ({
 
         {!playerCompleteAndIsUserPlayer && (
           <button
-            onClick={() => onJoinGame(game.gameId, game.stake)}
+            onClick={() => onJoinGame(game?.gameId, game?.stake)}
             disabled={isLoading || hasSecondPlayer}
             className={`w-full rounded-lg px-4 py-3 font-medium transition-all duration-200 
             ${
@@ -172,7 +172,7 @@ const GameSearchCard: React.FC<GameSearchCardProps> = ({
         )}
 
         {playerCompleteAndIsUserPlayer && (
-          <Link href={`/game/${game.gameId}`} passHref>
+          <Link href={`/game/${game?.gameId}`} passHref>
             <button className='flex items-center justify-center p-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors w-full mt-5'>
               Enter Game
             </button>
