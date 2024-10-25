@@ -80,7 +80,6 @@ const GameInterface = () => {
                                    duration: 30000,
                                  });
                                }
-                               console.log({ logs });
                 }
               },
             });
@@ -93,7 +92,6 @@ const GameInterface = () => {
   const gameDetails = gamesIdResult.data as Game
   const userAddress = account.address;
   const gameEnded = !gameDetails?.isActive && gameDetails?.roundsPlayed > 0;
-  console.log({ gameEnded });
 
   const handleMakeMove = async () => {
     try {
@@ -107,10 +105,6 @@ const GameInterface = () => {
       console.log(error);
     }
   };
-
-  React.useEffect(() => {
-    console.log(gamesIdResult);
-  }, [gamesIdResult]);
 
   React.useEffect(() => {
     if (isConfirmed) {
@@ -613,41 +607,26 @@ const GameInterface = () => {
           </div>
 
           <MoveHistory />
-          {/* 
-          {gameDetails?.lastPlayerMove === userAddress && (
-            <div className='flex items-center justify-center mb-4'>
-              <span className='text-sm text-slate-400 mr-2'>
-                My last move:
-              </span>
-              {gameDetails?.choices[1] === 1 && (
-                <Hand className='w-5 h-5' />
-              )}{' '}
-              {gameDetails?.choices[1] === 2 && <File className='w-5 h-5' />}{' '}
-              {gameDetails?.choices[1] === 3 && (
-                <Scissors className='w-5 h-5' />
-              )}{' '}
-            </div>
-          )} */}
           {gameDetails?.lastPlayerMove === userAddress && (
             <div className='flex items-center justify-center mb-4'>
               <span className='text-sm text-slate-400 mr-2'>My last move:</span>
               {gameDetails?.choices[1] === 1 && (
-                <span className='text-2xl'>🗿</span> // Render emoji for Rock
+                <span className='text-2xl'>🗿</span>
               )}{' '}
               {gameDetails?.choices[1] === 2 && (
-                <span className='text-2xl'>📄</span> // Render emoji for Paper
+                <span className='text-2xl'>📄</span>
               )}{' '}
               {gameDetails?.choices[1] === 3 && (
-                <span className='text-2xl'>✂️</span> // Render emoji for Scissors
+                <span className='text-2xl'>✂️</span>
               )}{' '}
               {gameDetails?.choices[0] === 1 && (
-                <span className='text-2xl'>🗿</span> // Render emoji for Rock
+                <span className='text-2xl'>🗿</span>
               )}{' '}
               {gameDetails?.choices[0] === 2 && (
-                <span className='text-2xl'>📄</span> // Render emoji for Paper
+                <span className='text-2xl'>📄</span>
               )}{' '}
               {gameDetails?.choices[0] === 3 && (
-                <span className='text-2xl'>✂️</span> // Render emoji for Scissors
+                <span className='text-2xl'>✂️</span>
               )}{' '}
             </div>
           )}

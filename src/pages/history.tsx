@@ -43,7 +43,7 @@ const GameHistory = () => {
 
     const gamesResult = contractGamesResult.data as Game[]
 
-    console.log({ gamesResult });
+    // console.log({ gamesResult });
     
 
     useEffect(() => {
@@ -51,30 +51,6 @@ const GameHistory = () => {
         router.push('/');
       } 
     }, [account.address, router]);
-
-
-
-
-  // if (gamesResult && gamesResult.length < 1) {
-  //   return (
-  //     <div className='flex flex-col items-center justify-center p-8 text-center'>
-  //       <div className='mb-4 rounded-full bg-gray-800/50 p-4'>
-  //         <GamepadIcon className='h-8 w-8 text-gray-400' />
-  //       </div>
-  //       <h3 className='mb-2 text-lg font-medium text-white'>No Games Found</h3>
-  //       <Link
-  //         href='/game' 
-  //         className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90'
-  //             `}
-  //       >
-  //         <>
-  //           <Play className='w-5 h-5' />
-  //           <span>Start New Game</span>
-  //         </>
-  //       </Link>
-  //     </div>
-  //   );
-  // }
 
 
   return (
