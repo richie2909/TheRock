@@ -16,6 +16,7 @@ import GameSearchCard from './GameSearchCard';
 import toast from 'react-hot-toast';
 import { extractErrorMessages } from '../utils';
 import { Game } from '../types';
+import { ErrorBoundary } from 'react-error-boundary';
 
 
 export default function JoinGame() {
@@ -115,6 +116,7 @@ useEffect(() => {
         }, [error]);
 
   return (
+        <ErrorBoundary fallback={<div>Something went wrong</div>}>
     <div className='space-y-6 text-white'>
       {/* Search and Refresh Section */}
       <div className='flex gap-4'>
@@ -166,5 +168,6 @@ useEffect(() => {
         </div>
       </div>
     </div>
+    </ErrorBoundary>
   );
 }
