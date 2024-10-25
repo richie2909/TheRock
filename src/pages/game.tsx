@@ -1,28 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Plus, Users } from 'lucide-react';
 import CreateGame from '../components/CreateGame';
 import JoinGame from '../components/JoinGame';
-import { useAccount } from 'wagmi';
-import { useRouter } from 'next/router';
 import { ErrorBoundary } from 'react-error-boundary';
 
 
 export default function GamePage() {
   const [activeTab, setActiveTab] = useState('create');
-  const {address} = useAccount();
-  const router = useRouter();
-
-  // useEffect(() => {
-  //   if (!address) {
-  //     router.push('/'); 
-  //   }
-
-  // }, [address, router]);
 
   return (
-    <ErrorBoundary fallback={<div>Something went wrong</div>}>
       <div className='space-y-6'>
         {/* Tabs */}
         <div className='flex space-x-2 bg-gray-800 p-1 rounded-lg'>
@@ -53,6 +41,5 @@ export default function GamePage() {
         {/* Content */}
         {activeTab === 'create' ? <CreateGame /> : <JoinGame />}
       </div>
-    </ErrorBoundary>
   );
 }

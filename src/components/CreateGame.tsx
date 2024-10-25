@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Trophy, Coins, Swords, Timer, Info } from 'lucide-react';
-import { parseEther, decodeAbiParameters } from 'viem';
+import { parseEther } from 'viem';
 import { useWriteContract, useWaitForTransactionReceipt, useWatchContractEvent } from 'wagmi';
 import { abi, contractAddress } from '../constants/contractInfo';
 import toast from 'react-hot-toast';
