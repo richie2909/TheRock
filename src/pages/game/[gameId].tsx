@@ -29,6 +29,7 @@ import {
   useAccount,
   useReadContract,
   useWaitForTransactionReceipt,
+  useWatchContractEvent,
   useWriteContract,
 } from 'wagmi';
 import { abi, contractAddress } from '../../constants/contractInfo';
@@ -62,6 +63,28 @@ const GameInterface = () => {
     scopeKey: refreshData,
   });
 
+            useWatchContractEvent({
+              address: contractAddress,
+              abi,
+              eventName: 'PlayerMoved',
+              onLogs(logs: any) {
+                if(logs){
+                  setRefreshData(Date.now().toString())
+                               const player = logs[0]?.args?.player;
+                               if (player === account.address) {
+                                 toast.success(`Move successfully made!`, {
+                                   duration: 3000,
+                                 });
+                               } else {
+                                 toast.success(`Opponent made move`, {
+                                   duration: 30000,
+                                 });
+                               }
+                               console.log({ logs });
+                }
+              },
+            });
+
   const pending = isPending || isConfirming;
 
   const [selectedMove, setSelectedMove] = useState(null);
@@ -91,12 +114,8 @@ const GameInterface = () => {
 
   React.useEffect(() => {
     if (isConfirmed) {
-      toast.success('Move successfully made!', {
-        duration: 3000,
-        icon: '🎉',
-      });
+      setRefreshData(Date.now().toString());
     }
-    setRefreshData(Date.now().toString());
   }, [isConfirmed]);
 
   React.useEffect(() => {

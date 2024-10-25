@@ -156,11 +156,24 @@ const GameSearchCard: React.FC<GameSearchCardProps> = ({
           `}
           >
             <span className='flex items-center justify-center gap-2'>
+              {/* {hasSecondPlayer ? (
+                <>
+                  <Users className='h-5 w-5' />
+                  Game Full
+                </>
+              ) : (
+                <>
+                  <User className='h-5 w-5' />
+                  Join Game
+                </>
+              )} */}
               {hasSecondPlayer ? (
                 <>
                   <Users className='h-5 w-5' />
                   Game Full
                 </>
+              ) : isLoading ? (
+                <div className='w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin' />
               ) : (
                 <>
                   <User className='h-5 w-5' />

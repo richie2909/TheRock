@@ -36,6 +36,7 @@ export default function JoinGame() {
   const [refreshToken, setRefreshToken] = useState('')
   const account = useAccount()
   const userAddress = account.address || undefined
+  const isTxnLoading = isPending || isConfirming
 
   const proofedSearchQuery = searchQuery || 0
 
@@ -168,7 +169,7 @@ useEffect(() => {
             ) : (
               <GameSearchCard
                 game={data}
-                isLoading={isPending}
+                isLoading={isTxnLoading}
                 onJoinGame={() => handleJoinGame(data?.gameId, data?.stake)}
                 userAddress={userAddress}
               />
