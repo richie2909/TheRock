@@ -423,7 +423,7 @@ const GameInterface = () => {
                     </div>
                     <span className='text-xs'>
                       {playerIndex &&
-                        formatAddress(gameDetails??.players[1 - playerIndex])}
+                        formatAddress(gameDetails?.players[1 - playerIndex])}
                     </span>
                   </div>
                 </div>
