@@ -36,6 +36,8 @@ import { extractErrorMessages } from '../../utils';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { Game, MoveColor, MoveType } from '../../types';
+import { ErrorBoundary } from 'react-error-boundary';
+
 
 const GameInterface = () => {
   const [refreshData, setRefreshData] = useState('');
@@ -110,6 +112,7 @@ const GameInterface = () => {
 
   if (!gameDetails) {
     return (
+          <ErrorBoundary fallback={<div>Something went wrong</div>}>
       <div className='flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white p-6'>
         <Clock className='w-12 h-12 text-blue-500 animate-spin mb-4' />
         <h2 className='text-2xl font-bold'>Loading Game...</h2>
@@ -117,54 +120,59 @@ const GameInterface = () => {
           Please wait while we fetch the game details.
         </p>
       </div>
+      </ErrorBoundary>
     );
   }
 
   // Early return for inactive games
   if (!gameDetails?.isActive && gameDetails?.roundsPlayed < 1) {
     return (
-      <div className='flex flex-col items-center justify-center min-h-[400px] bg-slate-900 text-white p-6'>
-        <div className='bg-slate-800/50 p-8 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col items-center max-w-md w-full'>
-          <div className='bg-red-500/10 p-4 rounded-full mb-4'>
-            <AlertCircle className='w-12 h-12 text-red-500' />
+      <ErrorBoundary fallback={<div>Something went wrong</div>}>
+        <div className='flex flex-col items-center justify-center min-h-[400px] bg-slate-900 text-white p-6'>
+          <div className='bg-slate-800/50 p-8 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col items-center max-w-md w-full'>
+            <div className='bg-red-500/10 p-4 rounded-full mb-4'>
+              <AlertCircle className='w-12 h-12 text-red-500' />
+            </div>
+            <h2 className='text-2xl font-bold mb-3'>Game Ended</h2>
+            <p className='text-slate-400 text-center mb-6'>
+              This game has concluded or is no longer active
+            </p>
+            <button
+              onClick={() => router.push('/games')}
+              className='flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors'
+            >
+              <GamepadIcon className='w-5 h-5' />
+              <span>Find New Games</span>
+            </button>
           </div>
-          <h2 className='text-2xl font-bold mb-3'>Game Ended</h2>
-          <p className='text-slate-400 text-center mb-6'>
-            This game has concluded or is no longer active
-          </p>
-          <button
-            onClick={() => router.push('/games')}
-            className='flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors'
-          >
-            <GamepadIcon className='w-5 h-5' />
-            <span>Find New Games</span>
-          </button>
         </div>
-      </div>
+      </ErrorBoundary>
     );
   }
 
   // Early return for non-players
   if (userAddress && !gameDetails?.players.includes(userAddress)) {
     return (
-      <div className='flex flex-col items-center justify-center min-h-[400px] bg-slate-900 text-white p-6'>
-        <div className='bg-slate-800/50 p-8 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col items-center max-w-md w-full'>
-          <div className='bg-yellow-500/10 p-4 rounded-full mb-4'>
-            <Users className='w-12 h-12 text-yellow-500' />
+      <ErrorBoundary fallback={<div>Something went wrong</div>}>
+        <div className='flex flex-col items-center justify-center min-h-[400px] bg-slate-900 text-white p-6'>
+          <div className='bg-slate-800/50 p-8 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col items-center max-w-md w-full'>
+            <div className='bg-yellow-500/10 p-4 rounded-full mb-4'>
+              <Users className='w-12 h-12 text-yellow-500' />
+            </div>
+            <h2 className='text-2xl font-bold mb-3'>Not a Player</h2>
+            <p className='text-slate-400 text-center mb-6'>
+              You are not participating in this game
+            </p>
+            <button
+              onClick={() => router.push('/game')}
+              className='flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors'
+            >
+              <ArrowLeftRight className='w-5 h-5' />
+              <span>Browse Games</span>
+            </button>
           </div>
-          <h2 className='text-2xl font-bold mb-3'>Not a Player</h2>
-          <p className='text-slate-400 text-center mb-6'>
-            You are not participating in this game
-          </p>
-          <button
-            onClick={() => router.push('/game')}
-            className='flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors'
-          >
-            <ArrowLeftRight className='w-5 h-5' />
-            <span>Browse Games</span>
-          </button>
         </div>
-      </div>
+      </ErrorBoundary>
     );
   }
 
@@ -173,17 +181,19 @@ const GameInterface = () => {
     gameDetails.players.includes('0x0000000000000000000000000000000000000000')
   ) {
     return (
-      <div className='flex flex-col items-center justify-center min-h-[400px] bg-slate-900 text-white p-6'>
-        <div className='bg-slate-800/50 p-8 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col items-center max-w-md w-full'>
-          <div className='bg-blue-500/10 p-4 rounded-full mb-4 animate-pulse'>
-            <Timer className='w-12 h-12 text-blue-500' />
+      <ErrorBoundary fallback={<div>Something went wrong</div>}>
+        <div className='flex flex-col items-center justify-center min-h-[400px] bg-slate-900 text-white p-6'>
+          <div className='bg-slate-800/50 p-8 rounded-2xl shadow-xl backdrop-blur-sm flex flex-col items-center max-w-md w-full'>
+            <div className='bg-blue-500/10 p-4 rounded-full mb-4 animate-pulse'>
+              <Timer className='w-12 h-12 text-blue-500' />
+            </div>
+            <h2 className='text-2xl font-bold mb-3'>Waiting for Opponent</h2>
+            <p className='text-slate-400 text-center'>
+              Another player needs to join before the game can begin
+            </p>
           </div>
-          <h2 className='text-2xl font-bold mb-3'>Waiting for Opponent</h2>
-          <p className='text-slate-400 text-center'>
-            Another player needs to join before the game can begin
-          </p>
         </div>
-      </div>
+      </ErrorBoundary>
     );
   }
 
@@ -365,266 +375,283 @@ const GameInterface = () => {
 
     if (completedRounds === 0) {
       return (
-        <div className='mb-4'>
-          <h3 className='text-sm font-semibold mb-2'>Move History</h3>
-          <div className='p-3 bg-slate-800 rounded-lg text-center text-slate-400 text-sm'>
-            No completed rounds yet
+        <ErrorBoundary fallback={<div>Something went wrong</div>}>
+          <div className='mb-4'>
+            <h3 className='text-sm font-semibold mb-2'>Move History</h3>
+            <div className='p-3 bg-slate-800 rounded-lg text-center text-slate-400 text-sm'>
+              No completed rounds yet
+            </div>
           </div>
-        </div>
+        </ErrorBoundary>
       );
     }
 
     return (
-      <div className='mb-4'>
-        <div className='flex items-center justify-between mb-2'>
-          <h3 className='text-sm font-semibold'>Move History</h3>
-          <span className='text-xs text-slate-400'>
-            {completedRounds} round{completedRounds > 1 ? 's' : ''}
-          </span>
-        </div>
-        <div className='space-y-2'>
-          {Array.from({ length: completedRounds }).map((_, index) => {
-            const myMove = myMoves[index];
-            const opponentMove = opponentMoves[index];
+      <ErrorBoundary fallback={<div>Something went wrong</div>}>
+        <div className='mb-4'>
+          <div className='flex items-center justify-between mb-2'>
+            <h3 className='text-sm font-semibold'>Move History</h3>
+            <span className='text-xs text-slate-400'>
+              {completedRounds} round{completedRounds > 1 ? 's' : ''}
+            </span>
+          </div>
+          <div className='space-y-2'>
+            {Array.from({ length: completedRounds }).map((_, index) => {
+              const myMove = myMoves[index];
+              const opponentMove = opponentMoves[index];
 
-            return (
-              <div
-                key={index}
-                className='flex items-center justify-between p-2 bg-slate-800 rounded-lg'
-              >
-                <div className='flex items-center gap-1'>
-                  <span className='text-xs text-slate-400 w-4'>
-                    {index + 1}
-                  </span>
-                  <span className='text-xs mr-1'>Me</span>
-                  <div className='p-1.5 bg-slate-700 rounded'>
-                    {getMoveIcon(myMove)}
+              return (
+                <div
+                  key={index}
+                  className='flex items-center justify-between p-2 bg-slate-800 rounded-lg'
+                >
+                  <div className='flex items-center gap-1'>
+                    <span className='text-xs text-slate-400 w-4'>
+                      {index + 1}
+                    </span>
+                    <span className='text-xs mr-1'>Me</span>
+                    <div className='p-1.5 bg-slate-700 rounded'>
+                      {getMoveIcon(myMove)}
+                    </div>
+                  </div>
+                  <div className='flex items-center gap-1'>
+                    {getResultIcon(myMove, opponentMove)}
+                  </div>
+                  <div className='flex items-center gap-1'>
+                    <div className='p-1.5 bg-slate-700 rounded'>
+                      {getMoveIcon(opponentMove)}
+                    </div>
+                    <span className='text-xs'>
+                      {playerIndex &&
+                        formatAddress(gameDetails.players[1 - playerIndex])}
+                    </span>
                   </div>
                 </div>
-                <div className='flex items-center gap-1'>
-                  {getResultIcon(myMove, opponentMove)}
-                </div>
-                <div className='flex items-center gap-1'>
-                  <div className='p-1.5 bg-slate-700 rounded'>
-                    {getMoveIcon(opponentMove)}
-                  </div>
-                  <span className='text-xs'>
-                    {playerIndex && formatAddress(gameDetails.players[1 - playerIndex])}
-                  </span>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </ErrorBoundary>
     );
   };
 
   const WaitingForMove = () => (
-    <div className='flex flex-col items-center justify-center p-6 bg-slate-800 rounded-xl'>
-      <div className='animate-pulse mb-4'>
-        <Clock className='w-12 h-12 text-blue-500' />
+    <ErrorBoundary fallback={<div>Something went wrong</div>}>
+      <div className='flex flex-col items-center justify-center p-6 bg-slate-800 rounded-xl'>
+        <div className='animate-pulse mb-4'>
+          <Clock className='w-12 h-12 text-blue-500' />
+        </div>
+        <h3 className='text-lg font-semibold mb-2'>Waiting for Move</h3>
+        <p className='text-slate-400 text-center'>
+          {`Waiting for ${formatAddress(
+            gameDetails.players.find((p) => p !== userAddress) ||
+              '0x0000000000000000000000000000000000000000'
+          )} to make their move`}
+        </p>
       </div>
-      <h3 className='text-lg font-semibold mb-2'>Waiting for Move</h3>
-      <p className='text-slate-400 text-center'>
-        {`Waiting for ${formatAddress(
-          gameDetails.players.find((p) => p !== userAddress) ||
-            '0x0000000000000000000000000000000000000000'
-        )} to make their move`}
-      </p>
-    </div>
+    </ErrorBoundary>
   );
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white p-4'>
-      <div className='w-full max-w-xl bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl p-6'>
-        {/* Header */}
-        <div className='text-center mb-8'>
-          <div className='flex items-center justify-center gap-3 mb-4'>
-            <div className={`p-2 rounded-lg ${gameType.bgColor}`}>
-              {gameType.icon}
+    <ErrorBoundary fallback={<div>Something went wrong</div>}>
+      <div className='flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white p-4'>
+        <div className='w-full max-w-xl bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl p-6'>
+          {/* Header */}
+          <div className='text-center mb-8'>
+            <div className='flex items-center justify-center gap-3 mb-4'>
+              <div className={`p-2 rounded-lg ${gameType.bgColor}`}>
+                {gameType.icon}
+              </div>
+              <h1 className='text-2xl font-bold'>{gameType.name}</h1>
             </div>
-            <h1 className='text-2xl font-bold'>{gameType.name}</h1>
-          </div>
 
-          <div className='flex justify-between items-center px-4 py-2 bg-slate-800 rounded-xl'>
-            <div className='flex items-center gap-2'>
-              <Trophy className='w-5 h-5 text-indigo-400' />
-              <span>Game #{Number(gameDetails.gameId)}</span>
-            </div>
-            <div className='flex items-center gap-2'>
-              <Circle
-                className={
-                  gameDetails.isActive
-                    ? 'w-4 h-4 text-green-500'
-                    : 'w-4 h-4 text-red-500'
-                }
-              />
-              <span className='text-sm'>
-                Round {gameDetails.roundsPlayed + 1}/{gameType.rounds}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Game Info */}
-        <div className='space-y-4 mb-8'>
-          {gameEnded && (
-            <div className='text-center mb-4'>
-              {(() => {
-                const getScore = (
-                  address: string | undefined,
-                  gameDetails: Game
-                ) => {
-                  if (!address) return null;
-                  const playerIndex = gameDetails.players.indexOf(address);
-                  return gameDetails.scores[playerIndex] ?? null;
-                };
-
-                const userScore = getScore(userAddress, gameDetails);
-                const opponentScore = getScore(
-                  gameDetails.players.find((player) => player !== userAddress),
-                  gameDetails
-                );
-
-                const renderResultMessage = () => {
-                  if (userScore === null || opponentScore === null) {
-                    return (
-                      <p className='text-gray-500'>
-                        Game results are unavailable.
-                      </p>
-                    );
+            <div className='flex justify-between items-center px-4 py-2 bg-slate-800 rounded-xl'>
+              <div className='flex items-center gap-2'>
+                <Trophy className='w-5 h-5 text-indigo-400' />
+                <span>Game #{Number(gameDetails.gameId)}</span>
+              </div>
+              <div className='flex items-center gap-2'>
+                <Circle
+                  className={
+                    gameDetails.isActive
+                      ? 'w-4 h-4 text-green-500'
+                      : 'w-4 h-4 text-red-500'
                   }
-                  if (userScore > opponentScore) {
-                    return (
-                      <p className='text-green-500 font-bold'>🎉 You win! 🎉</p>
-                    );
-                  }
-                  if (userScore < opponentScore) {
-                    return (
-                      <p className='text-red-500 font-bold'>😢 You lose! 😢</p>
-                    );
-                  }
-                  return (
-                    <p className='text-yellow-500 font-bold'>
-                      🤝 It's a tie! 🤝
-                    </p>
-                  );
-                };
-
-                return renderResultMessage();
-              })()}
-            </div>
-          )}
-          <div className='flex items-center justify-between p-4 bg-slate-800 rounded-xl'>
-            <div className='flex items-center gap-2'>
-              <Coins className='w-5 h-5 text-yellow-500' />
-              <span>Stake</span>
-            </div>
-            <span className='font-bold text-yellow-500'>
-              {formatEther(gameDetails.stake)} ETH
-            </span>
-          </div>
-          {gameDetails.players.map((player, index) => (
-            <div
-              key={player}
-              className={`p-4 rounded-xl ${
-                player === userAddress
-                  ? 'bg-indigo-500/10 border border-indigo-500/20'
-                  : 'bg-slate-800'
-              }`}
-            >
-              <div className='flex justify-between items-center'>
-                <div className='flex items-center gap-3'>
-                  <div
-                    className={`p-2 rounded-lg ${
-                      player === userAddress
-                        ? 'bg-indigo-500/20'
-                        : 'bg-slate-700'
-                    }`}
-                  >
-                    <Users
-                      className={`w-5 h-5 ${
-                        player === userAddress
-                          ? 'text-indigo-500'
-                          : 'text-slate-400'
-                      }`}
-                    />
-                  </div>
-                  <div>
-                    <div className='text-sm text-slate-400'>
-                      Player {index + 1}
-                    </div>
-                    <div className='font-medium'>{formatAddress(player)}</div>
-                  </div>
-                </div>
-                <div className='text-2xl font-bold'>
-                  {gameDetails.scores[index]}
-                </div>
+                />
+                <span className='text-sm'>
+                  Round {gameDetails.roundsPlayed + 1}/{gameType.rounds}
+                </span>
               </div>
             </div>
-          ))}
-        </div>
-
-        <MoveHistory />
-
-        {gameDetails.lastPlayerMove === userAddress && (
-          <div className='flex items-center justify-center mb-4'>
-            <span className='text-sm text-slate-400 mr-2'>My last move:</span>
-            {gameDetails.choices[1] === 1 && <Hand className='w-5 h-5' />}{' '}
-            {gameDetails.choices[1] === 2 && <File className='w-5 h-5' />}{' '}
-            {gameDetails.choices[1] === 3 && <Scissors className='w-5 h-5' />}{' '}
           </div>
-        )}
-        {gameDetails.lastPlayerMove !== userAddress && !gameEnded ? (
-          <>
-            <div className='grid grid-cols-3 gap-4 mb-6'>
-              {getMoveButton('Rock', moveColors.Rock, '🗿')}
-              {getMoveButton('Paper', moveColors.Paper, '📄')}
-              {getMoveButton('Scissors', moveColors.Scissors, '✂️')}
-            </div>
 
-            {playerMove && (
-              <button
-                onClick={handleMakeMove}
-                disabled={pending}
-                className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2
+          {/* Game Info */}
+          <div className='space-y-4 mb-8'>
+            {gameEnded && (
+              <div className='text-center mb-4'>
+                {(() => {
+                  const getScore = (
+                    address: string | undefined,
+                    gameDetails: Game
+                  ) => {
+                    if (!address) return null;
+                    const playerIndex = gameDetails.players.indexOf(address);
+                    return gameDetails.scores[playerIndex] ?? null;
+                  };
+
+                  const userScore = getScore(userAddress, gameDetails);
+                  const opponentScore = getScore(
+                    gameDetails.players.find(
+                      (player) => player !== userAddress
+                    ),
+                    gameDetails
+                  );
+
+                  const renderResultMessage = () => {
+                    if (userScore === null || opponentScore === null) {
+                      return (
+                        <p className='text-gray-500'>
+                          Game results are unavailable.
+                        </p>
+                      );
+                    }
+                    if (userScore > opponentScore) {
+                      return (
+                        <p className='text-green-500 font-bold'>
+                          🎉 You win! 🎉
+                        </p>
+                      );
+                    }
+                    if (userScore < opponentScore) {
+                      return (
+                        <p className='text-red-500 font-bold'>
+                          😢 You lose! 😢
+                        </p>
+                      );
+                    }
+                    return (
+                      <p className='text-yellow-500 font-bold'>
+                        🤝 It's a tie! 🤝
+                      </p>
+                    );
+                  };
+
+                  return renderResultMessage();
+                })()}
+              </div>
+            )}
+            <div className='flex items-center justify-between p-4 bg-slate-800 rounded-xl'>
+              <div className='flex items-center gap-2'>
+                <Coins className='w-5 h-5 text-yellow-500' />
+                <span>Stake</span>
+              </div>
+              <span className='font-bold text-yellow-500'>
+                {formatEther(gameDetails.stake)} ETH
+              </span>
+            </div>
+            {gameDetails.players.map((player, index) => (
+              <div
+                key={player}
+                className={`p-4 rounded-xl ${
+                  player === userAddress
+                    ? 'bg-indigo-500/10 border border-indigo-500/20'
+                    : 'bg-slate-800'
+                }`}
+              >
+                <div className='flex justify-between items-center'>
+                  <div className='flex items-center gap-3'>
+                    <div
+                      className={`p-2 rounded-lg ${
+                        player === userAddress
+                          ? 'bg-indigo-500/20'
+                          : 'bg-slate-700'
+                      }`}
+                    >
+                      <Users
+                        className={`w-5 h-5 ${
+                          player === userAddress
+                            ? 'text-indigo-500'
+                            : 'text-slate-400'
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <div className='text-sm text-slate-400'>
+                        Player {index + 1}
+                      </div>
+                      <div className='font-medium'>{formatAddress(player)}</div>
+                    </div>
+                  </div>
+                  <div className='text-2xl font-bold'>
+                    {gameDetails.scores[index]}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <MoveHistory />
+
+          {gameDetails.lastPlayerMove === userAddress && (
+            <div className='flex items-center justify-center mb-4'>
+              <span className='text-sm text-slate-400 mr-2'>My last move:</span>
+              {gameDetails.choices[1] === 1 && (
+                <Hand className='w-5 h-5' />
+              )}{' '}
+              {gameDetails.choices[1] === 2 && <File className='w-5 h-5' />}{' '}
+              {gameDetails.choices[1] === 3 && <Scissors className='w-5 h-5' />}{' '}
+            </div>
+          )}
+          {gameDetails.lastPlayerMove !== userAddress && !gameEnded ? (
+            <>
+              <div className='grid grid-cols-3 gap-4 mb-6'>
+                {getMoveButton('Rock', moveColors.Rock, '🗿')}
+                {getMoveButton('Paper', moveColors.Paper, '📄')}
+                {getMoveButton('Scissors', moveColors.Scissors, '✂️')}
+              </div>
+
+              {playerMove && (
+                <button
+                  onClick={handleMakeMove}
+                  disabled={pending}
+                  className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2
                   ${
                     !playerMove
                       ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
                       : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90'
                   }`}
-              >
-                {pending ? (
-                  <div className='w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin' />
-                ) : (
-                  <>
-                    <CheckCircle2 className='w-5 h-5' />
-                    <span>Make move</span>
-                  </>
-                )}
-              </button>
-            )}
-          </>
-        ) : gameDetails.lastPlayerMove === userAddress ? (
-          <WaitingForMove />
-        ) : (
-          <></>
-        )}
-        {gameEnded && (
-          <Link
-            href='/game'
-            className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90'
-              `}
-          >
-            <>
-              <Play className='w-5 h-5' />
-              <span>Start New Game</span>
+                >
+                  {pending ? (
+                    <div className='w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin' />
+                  ) : (
+                    <>
+                      <CheckCircle2 className='w-5 h-5' />
+                      <span>Make move</span>
+                    </>
+                  )}
+                </button>
+              )}
             </>
-          </Link>
-        )}
+          ) : gameDetails.lastPlayerMove === userAddress ? (
+            <WaitingForMove />
+          ) : (
+            <></>
+          )}
+          {gameEnded && (
+            <Link
+              href='/game'
+              className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90'
+              `}
+            >
+              <>
+                <Play className='w-5 h-5' />
+                <span>Start New Game</span>
+              </>
+            </Link>
+          )}
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 };
 

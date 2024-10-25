@@ -6,6 +6,8 @@ import CreateGame from '../components/CreateGame';
 import JoinGame from '../components/JoinGame';
 import { useAccount } from 'wagmi';
 import { useRouter } from 'next/router';
+import { ErrorBoundary } from 'react-error-boundary';
+
 
 export default function GamePage() {
   const [activeTab, setActiveTab] = useState('create');
@@ -20,39 +22,37 @@ export default function GamePage() {
   // }, [address, router]);
 
   return (
-    <div className='space-y-6'>
-      {/* Tabs */}
-      <div className='flex space-x-2 bg-gray-800 p-1 rounded-lg'>
-        <button
-          onClick={() => setActiveTab('create')}
-          className={`flex-1 flex items-center justify-center space-x-2 py-2 px-4 rounded-md transition-colors ${
-            activeTab === 'create'
-              ? 'bg-gray-700 text-white'
-              : 'text-gray-400 hover:text-white'
-          }`}
-        >
-          <Plus className='w-4 h-4' />
-          <span>Create Game</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('join')}
-          className={`flex-1 flex items-center justify-center space-x-2 py-2 px-4 rounded-md transition-colors ${
-            activeTab === 'join'
-              ? 'bg-gray-700 text-white'
-              : 'text-gray-400 hover:text-white'
-          }`}
-        >
-          <Users className='w-4 h-4' />
-          <span>Join Game</span>
-        </button>
-      </div>
+    <ErrorBoundary fallback={<div>Something went wrong</div>}>
+      <div className='space-y-6'>
+        {/* Tabs */}
+        <div className='flex space-x-2 bg-gray-800 p-1 rounded-lg'>
+          <button
+            onClick={() => setActiveTab('create')}
+            className={`flex-1 flex items-center justify-center space-x-2 py-2 px-4 rounded-md transition-colors ${
+              activeTab === 'create'
+                ? 'bg-gray-700 text-white'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <Plus className='w-4 h-4' />
+            <span>Create Game</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('join')}
+            className={`flex-1 flex items-center justify-center space-x-2 py-2 px-4 rounded-md transition-colors ${
+              activeTab === 'join'
+                ? 'bg-gray-700 text-white'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            <Users className='w-4 h-4' />
+            <span>Join Game</span>
+          </button>
+        </div>
 
-      {/* Content */}
-      {activeTab === 'create' ? (
-        <CreateGame />
-      ) : (
-        <JoinGame />
-      )}
-    </div>
+        {/* Content */}
+        {activeTab === 'create' ? <CreateGame /> : <JoinGame />}
+      </div>
+    </ErrorBoundary>
   );
 }
