@@ -1,4 +1,3 @@
-// Define the type for the game object
 export interface Game {
   choices: number[];
   gameId: bigint; 

@@ -83,10 +83,6 @@ export default function CreateGame() {
         value: parseEther(stakeAmount),
       });
 
-
-
-  
-
       // Update loading toast when transaction is sent
       toast.loading('Waiting for transaction confirmation...', {
         id: toastId,

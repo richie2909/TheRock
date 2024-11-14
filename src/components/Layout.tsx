@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useRouter } from 'next/router'; // Import useRouter
+import { useRouter } from 'next/router';
 import { Home, GamepadIcon, History } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
@@ -30,11 +30,11 @@ const NAV_ITEMS = [
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   const { isConnected } = useAccount();
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter(); 
 
   const handleLinkClick = (path: string) => {
     if (!isConnected && path !== '/') {
-      toast.error('Please connect your wallet to access this feature.'); // Show error message
+      toast.error('Please connect your wallet to access this feature.'); 
     }
   };
 
@@ -43,13 +43,15 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {/* Header */}
       <header className='fixed top-0 left-0 right-0 h-14 bg-gray-900 shadow-lg z-50'>
         <div className='flex items-center justify-between h-full px-4'>
-          <Image
-            src='/rps-img.webp' // Update with your image path
-            alt='Rock Paper scissor' // Provide an alt text for accessibility
-            width={40} // Set the desired width
-            height={40} // Set the desired height
-            className='ml-2' // Add margin to the left for spacing
-          />
+          <Link href='/' className='flex items-center'>
+            <Image
+              src='/rps-img.webp'
+              alt='Rock Paper scissor'
+              width={40}
+              height={40}
+              className='ml-2'
+            />
+          </Link>
           <ConnectButton />
         </div>
       </header>
@@ -66,12 +68,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             {NAV_ITEMS.map(({ path, label, icon: Icon }) => {
               const isActive =
                 pathname === path ||
-                (path === '/game' && router.asPath.startsWith('/game')); // Update active condition
+                (path === '/game' && router.asPath.startsWith('/game')); 
               return (
                 <li key={path} className='flex-1'>
                   <Link
-                    href={isConnected || path === '/' ? path : '#'} // Disable link if not connected
-                    onClick={() => handleLinkClick(path)} // Handle click
+                    href={isConnected || path === '/' ? path : '#'} 
+                    onClick={() => handleLinkClick(path)} 
                     className={`flex flex-col items-center justify-center h-full transition-colors duration-200 ${
                       isActive
                         ? 'text-blue-500'
@@ -80,7 +82,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                       !isConnected && path !== '/'
                         ? 'cursor-not-allowed opacity-50'
                         : ''
-                    }`} // Add styles for disabled state
+                    }`}
                   >
                     <Icon size={24} className='mb-1' />
                     <span className='text-xs'>{label}</span>

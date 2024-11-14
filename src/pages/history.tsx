@@ -42,8 +42,6 @@ const GameHistory = () => {
     });
 
     const gamesResult = contractGamesResult.data as Game[]
-
-    // console.log({ gamesResult });
     
 
     useEffect(() => {
@@ -87,8 +85,6 @@ const GameHistory = () => {
     </div>
   );
 };
-
-// 
 
 const GameHistoryCard:React.FC<GameHistoryCardProps> = ({ game, userAddress }) => {
   const [isExpanded, setIsExpanded] = useState(false);

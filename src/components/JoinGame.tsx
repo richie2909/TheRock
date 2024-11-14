@@ -59,7 +59,6 @@ export default function JoinGame() {
   const handleSearch = async () => {
     setIsLoading(true);
     try {
-      // Fetch active games logic will go here
       
       setActiveGames(data as Game | undefined);
     } finally {
