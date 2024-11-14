@@ -49,7 +49,6 @@ export default function CreateGame() {
                     toast.success(`Game of ID ${createdGameID} created`, {
                       duration: 3000,
                     });
-      // router.push(`/game/${createdGameID}`);
                    setTimeout(() => {
                      router.push(`/game/${createdGameID}`);
                    }, 2000);
