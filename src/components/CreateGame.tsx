@@ -8,6 +8,8 @@ import { abi, contractAddress } from '../constants/contractInfo';
 import toast from 'react-hot-toast';
 import { extractErrorMessages } from '../utils';
 import { ErrorBoundary } from 'react-error-boundary';
+import { useRouter } from 'next/router'; 
+
 
 
 const GAME_TYPES = [
@@ -36,6 +38,7 @@ const GAME_TYPES = [
 
 export default function CreateGame() {
     const { data: hash, error, isPending, writeContract } = useWriteContract();
+       const router = useRouter(); 
 
           useWatchContractEvent({
             address: contractAddress,
@@ -46,6 +49,11 @@ export default function CreateGame() {
                     toast.success(`Game of ID ${createdGameID} created`, {
                       duration: 3000,
                     });
+      // router.push(`/game/${createdGameID}`);
+                   setTimeout(() => {
+                     router.push(`/game/${createdGameID}`);
+                   }, 2000);
+
             },
           });
     
@@ -75,6 +83,8 @@ export default function CreateGame() {
         args: [BigInt(selectedType)],
         value: parseEther(stakeAmount),
       });
+
+
 
   
 
