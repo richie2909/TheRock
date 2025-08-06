@@ -340,14 +340,14 @@ const GameInterface = () => {
 
   const getMoveIcon = (move: number) => {
     switch (move) {
-      case 1:
-                return '🗿';
+        case 1:
+        return '🪨';
       case 2:
-        return '📄';
+        return '🗒️';
       case 3:
         return '✂️';
       default:
-        return null;
+        return '❓';
     }
   };
 

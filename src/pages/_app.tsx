@@ -18,7 +18,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={client}>
         <RainbowKitProvider>
           <Toaster position='top-right' reverseOrder={false} />
-          <Layout>
+            <Layout>
             <Component {...pageProps} />
           </Layout>
         </RainbowKitProvider>
