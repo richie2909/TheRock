@@ -42,15 +42,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <div className='flex flex-col min-h-screen bg-gray-800'>
       {/* Header */}
       <header className='fixed top-0 left-0 right-0 h-14 bg-gray-900 shadow-lg z-50'>
-        <div className='flex items-center justify-between h-full px-4'>
+        <div className='flex items-center justify-between h-full px-4 font-bold text-pink-100'>
           <Link href='/' className='flex items-center'>
-            <Image
-              src='/rps-img.webp'
-              alt='Rock Paper scissor'
-              width={40}
-              height={40}
-              className='ml-2'
-            />
+            Rock Paper Scissors 
           </Link>
           <ConnectButton />
         </div>

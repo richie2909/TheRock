@@ -15,7 +15,7 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Blockchain Rock Paper Scissors</title>
+        <title>Rock Paper Scissor</title>
         <meta
           name='description'
           content='Challenge players worldwide in the ultimate game of strategy'
@@ -32,7 +32,7 @@ const Home: NextPage = () => {
             <ScrollText className='w-12 h-12 text-green-400 animate-pulse delay-200' />
           </div>
           <h1 className='text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-green-400 bg-clip-text text-transparent'>
-            Blockchain Rock Paper Scissors
+           Rock Paper Scissors
           </h1>
           <p className='text-gray-300 text-lg'>
             Challenge players worldwide in the ultimate game of strategy
@@ -111,7 +111,7 @@ const Home: NextPage = () => {
 
         {/* Additional Info */}
         <div className='text-center text-gray-400 text-sm'>
-          <p>Built with ❤️ on Ethereum</p>
+          <p>Built by Richie</p>
         </div>
       </div>
     </>
