@@ -168,9 +168,9 @@ const GameHistoryCard:React.FC<GameHistoryCardProps> = ({ game, userAddress }) =
   const getMoveIcon = (move: number) => {
     switch (Number(move)) {
       case 1:
-        return '🗿';
+        return '🪨';
       case 2:
-        return '📄';
+        return '🗒️';
       case 3:
         return '✂️';
       default:
