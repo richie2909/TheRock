@@ -21,7 +21,7 @@ const Home: NextPage = () => {
           content='Challenge players worldwide in the ultimate game of strategy'
         />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <link rel='icon' href='/favicon.ico' />
+        <link rel='icon' href='/favicon.ico' type="image/x-icon" />
       </Head>
       <div className='flex flex-col items-center space-y-8 text-white'>
         {/* Hero Section */}

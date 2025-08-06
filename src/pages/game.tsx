@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Plus, Users } from 'lucide-react';
 import CreateGame from '../components/CreateGame';
 import JoinGame from '../components/JoinGame';
-import { ErrorBoundary } from 'react-error-boundary';
 
 
 export default function GamePage() {

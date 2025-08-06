@@ -7,7 +7,6 @@ import { Home, GamepadIcon, History } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { toast } from 'react-hot-toast'; 
-import Image from 'next/image';
 
 const NAV_ITEMS = [
   {
