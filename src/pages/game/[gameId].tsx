@@ -209,7 +209,7 @@ const GameInterface = () => {
             <div className='bg-blue-500/10 p-4 rounded-full mb-4 animate-pulse'>
               <Timer className='w-12 h-12 text-blue-500' />
             </div>
-            <h2 className='text-2xl font-bold mb-3'>Waiting for Opponent</h2>
+            <h2 className='text-2xl font-bold text-nowrap mb-3'>Waiting for Opponent</h2>
             <p className='text-slate-400 text-center'>
               Another player needs to join before the game can begin
             </p>
